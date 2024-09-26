@@ -1,0 +1,30 @@
+[build-system]
+requires = [
+    "setuptools >= 64",
+    "setuptools_scm >= 7",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doctions" 
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    "pydantic==1.*",
+    "oyaml",
+    "plum-dispatch",
+    "urlpath",
+    "jinja2",
+    "typer",
+]
+[project.optional-dependencies]
+testing = [
+    "pytest",
+]
+[project.scripts]
+doctions = "doctions.releng.cli:app"
+
+[project.entry-points."doctions-actions"]
+"github-release" = "doctions.releng.actions:CreateGithubRelease"
+
+[tool.setuptools_scm]
