@@ -1,0 +1,43 @@
+project:
+  id: prommis
+  name: PrOMMiS
+  github:
+    org: prommis
+    name: prommis
+  readthedocs:
+    slug: prommis
+    project_name: prommis
+  python:
+    name: prommis
+    default_python_version: '3.11'
+    test_commands:
+      - idaes get-extensions --verbose && pip install pytest && pushd "$(mktemp -d)" && pytest --pyargs prommis
+  releasing:
+    notes_template: |
+      # {{ notes_title }}
+
+      Start with our [online documentation]({{ docs_url }}) to get started with install instructions, examples, etc.
+
+      {{ highlights_text }}
+    cycles:
+      "0.2": {year: 2023, month: 12}
+
+releases:
+  "0.4.0":
+    release_branch: main
+  "0.4.0rc0":
+    release_branch: main
+  "0.3.0":
+    release_branch: main
+    highlights_text: |
+      - #34: Adds a Jupyter notebook tutorial for setting up and running the University of Kentucky (UKy) flowsheet
+      - #36: Adds preliminary costing to the pilot-scale UKy flowsheet
+      - #49: A demonstration of lithium brine purification using nanofiltration uses the Donnan Steric Pore Model with Dielectric Exclusion from WaterTAP. The flowsheets can either optimize the membrane unit for a particular set of conditions, or perform a sensitivity analysis on the volume recovery of the membrane.
+  "0.3.0rc0":
+    release_branch: main
+    highlights_text: |
+      - #34: Adds a Jupyter notebook tutorial for setting up and running the University of Kentucky (UKy) flowsheet
+      - #36: Adds preliminary costing to the pilot-scale UKy flowsheet
+      - #49: A demonstration of lithium brine purification using nanofiltration uses the Donnan Steric Pore Model with Dielectric Exclusion from WaterTAP. The flowsheets can either optimize the membrane unit for a particular set of conditions, or perform a sensitivity analysis on the volume recovery of the membrane.
+  "0.2.0": {}
+  "0.2.0rc0": {}

@@ -1,0 +1,58 @@
+project:
+  id: idaes-examples
+  name: IDAES examples
+  github:
+    org: IDAES
+    name: examples
+  readthedocs:
+    slug: idaes-examples
+    project_name: idaes-examples
+  python:
+    name: idaes-examples
+    default_python_version: '3.10'
+    test_commands: []
+  releasing:
+    notes_template: |
+      # IDAES-PSE Examples {{ notes_title }}
+
+      These are the [examples and notebooks]({{ docs_url }}) for the IDAES-PSE framework.
+
+      # {{ tag }} Release Highlights
+
+      {% for item in highlights -%}
+      - {{ item }}
+      {% endfor -%}
+      {{ highlights_text }}
+    cycles:
+      '2.3': {year: 2023, month: 11}
+      '2.2': {year: 2023, month: 8}
+      '2.1': {year: 2023, month: 5}
+
+releases:
+  '2.5.0':
+    highlights: []
+  '2.5.0rc0':
+    next_dev_version_tag: "2.6.dev0"
+    highlights: []
+  '2.4.0':
+    highlights: []
+  '2.4.0rc0':
+    next_dev_version_tag: "2.5.dev0"
+    highlights: []
+  '2.3.0':
+    highlights: []
+  '2.3.0rc0':
+    highlights: []
+    next_dev_version_tag: "2.4.dev0"
+  '2.2.0':
+    highlights: []
+  '2.2.0rc0':
+    highlights: []
+    next_dev_version_tag: '2.3.dev0'
+  '2.1.0':
+    highlights:
+      - New repository structure
+  '2.1.0rc0':
+    highlights:
+      - New repository structure
+    next_dev_version_tag: '2.2.dev0'

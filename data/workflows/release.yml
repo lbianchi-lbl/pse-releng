@@ -1,0 +1,482 @@
+name: '${{ project.name }}: cutting release `${{ release.tag }}`'
+data: {}
+
+jobs:
+
+  update-release-branch:
+    name: Create and/or update `${{ release.branch_name }}` release branch
+    steps:
+      - name: Clone repository in a fresh directory
+        run: |
+          pushd "$(mktemp -d)"
+          ${{ project.git_clone_command }}
+      - name: Switch to release branch if it exists, else create it
+        run: |
+          git checkout "${{ release.branch_name }}" || git checkout -b "${{ release.branch_name }}"
+      - name: Review differences with the default branch
+        uses: checklist
+        with:
+          items:
+            - Go to compare URL ${{ release.github_compare_url }}
+      - name: Cherry-pick commits onto the release branch
+        if: ${{ release.refs_to_cherrypick }}
+        run: |
+          # -x: append "Cherry-picked from..." to commit message
+          git cherry-pick -x ${{ release.refs_to_cherrypick|join(' ') }}
+      - name: Update version and dependencies in `./setup.py` (WaterTAP, DISPATCHES)
+        uses: checklist
+        if: ${{ project.id in ["watertap", "dispatches"] }}
+        with:
+          items:
+            - Open `./setup.py`
+            - Search for `version=` (in the kwargs for the call to `setup()`) and set `version="${{ release.tag }}"`
+            - |
+              Search for `SPECIAL_DEPENDENCIES_FOR_RELEASE` and set it to `SPECIAL_DEPENDENCIES_FOR_RELEASE = ["idaes-pse${{ release.extra.idaes_pse_version }}"]`
+            - Search for `SPECIAL_DEPENDENCIES_FOR_PRERELEASE` and set it to `SPECIAL_DEPENDENCIES_FOR_PRERELEASE = SPECIAL_DEPENDENCIES_FOR_RELEASE`
+            - Search for `install_requires=`
+            - Make sure **only** `SPECIAL_DEPENDENCIES_FOR_RELEASE` (i.e. the **FOR_RELEASE** variant) is included in `install_requires`
+            - Save and exit
+            - Open `./docs/conf.py`
+            - Search for `version =` and set `version = "${{ release.tag }}"`
+            - Search for `release =` and set `release = "${{ release.tag }}"`
+            - Save and exit
+            - '`git add setup.py docs/conf.py`'
+      - name: Update version and dependencies (FOQUS)
+        uses: checklist
+        if: ${{ project.id in ["foqus"] }}
+        with:
+          items:
+            - Open `./setup.py`
+            - Search for `default_version = ` and set `default_version = "${{ release.tag }}"`
+            - Save and exit
+            - Open `./docs/source/conf.py`
+            - Search for `version =` and set `version = "${{ release.tag }}"`
+            - Search for `release =` and set `release = "${{ release.tag }}"`
+            - Save and exit
+            - "`git add setup.py ./docs/source/conf.py`"
+      - name: Update version (IDAES)
+        uses: checklist
+        if: ${{ project.id in ["idaes", "idaes-pse"] }}
+        with:
+          items:
+            - Open `./idaes/ver.py`
+            - Search for `package_version = Version(`
+            - Set first 3 arguments to `${{ release.major, release.minor, release.patch }}`
+            - Set 4th arguments to `"${{ release.version_qualifier }}"`
+            - Remaining arguments can be left as-is
+            - Save and exit
+            - "`git add ./idaes/ver.py`"
+      - name: Update version (IDAES examples)
+        if: ${{ project.id in ["idaes-examples"] }}
+        uses: checklist
+        with:
+          items:
+            - Open `pyproject.toml`
+            - Search for `version = `
+            - Change the version so that it looks like `version = ${{ release.tag }}`
+            - Save and exit
+            - "`git add pyproject.toml`"
+      - name: Update version (IDAES UI)
+        if: ${{ project.id in ["idaes-ui"] }}
+        uses: checklist
+        with:
+          items:
+            - Open `pyproject.toml`
+            - Search for `version = `
+            - Change the version so that it looks like `version = ${{ release.tag }}`
+            - Ensure that all dependencies are in a PyPI-compatible format (e.g. no URLs)
+            - Save and exit
+            - "`git add pyproject.toml`"
+      - name: Update version (IDAES examples-pse)
+        if: ${{ project.id in ["idaes-examples-pse"] }}
+        uses: checklist
+        with:
+          items:
+            - Open `./docs/conf.py`
+            - Search for `release = `
+            - Change the version so that it looks like `release = ${{ release.tag }}`
+            - Save and exit
+            - "`git add ./docs/conf.py`"
+      - name: Update version and dependencies in `./setup.py` (PARETO)
+        uses: checklist
+        if: ${{ project.id in ["pareto"] }}
+        with:
+          items:
+            - Open `./setup.py`
+            - Search for VERSION and set it to `VERSION = "${{ release.tag}}"`
+            - Save and exit
+            - '`git add setup.py docs/conf.py`'
+      - name: Check that the local modifications to the version are as they should
+        run: |
+          git status      # there shouldn't be any other unstaged files
+          git status -vv  # the changes with the version should be there
+      - name: Commit the changes to the `${{ release.branch_name }}` branch
+        run: |
+          # check that we're on the correct release branch
+          test "$(git branch --show-current)" = "${{ release.branch_name }}" && git commit -m "${{ release.tag }}" --allow-empty
+      - name: Review the changes before pushing
+        run: |
+          git log --oneline -n 5  # it should show only one commit which is not pushed
+          git push --set-upstream ${{ project.git_push_remote }} "${{ release.branch_name }}" --dry-run
+      - name: Push the changes
+        run: |
+          git push --set-upstream ${{ project.git_push_remote }} "${{ release.branch_name }}"
+
+  update-default-branch:
+    name: Updating default branch with next dev version
+    if: ${{ release.next_dev_version_tag }}
+    steps:
+      - name: Clone repository in a fresh directory
+        run: |
+          pushd "$(mktemp -d)"
+          ${{ project.git_clone_command }}
+      - name: Update version and dependencies in `./setup.py` (FOQUS)
+        uses: checklist
+        if: ${{ project.id in ["foqus"] }}
+        with:
+          items:
+            - Open `./setup.py`
+            - Search for `default_version = ` and set `default_version = "${{ release.next_dev_version_tag }}"`
+            - Save and exit
+      - name: Update version (IDAES)
+        uses: checklist
+        if: ${{ project.id in ["idaes", "idaes-pse"] }}
+        with:
+          items:
+            - Open `./idaes/ver.py`
+            - Search for `package_version = Version(`
+            - Set first 3 arguments to `${{ release.major, release.minor, release.patch }}`
+            - Set 4th arguments to `"${{ release.version_qualifier }}"`
+            - Remaining arguments can be left as-is
+      - name: Update version (IDAES examples, IDAES UI)
+        if: ${{ project.id in ["idaes-examples", "idaes-ui"] }}
+        uses: checklist
+        with:
+          items:
+            - Open `pyproject.toml`
+            - Search for `version = `
+            - Change the version so that it looks like `version = ${{ release.next_dev_version_tag }}`
+            - Save and exit
+            - "`git add pyproject.toml`"
+      - name: Update version (IDAES examples-pse)
+        if: ${{ project.id in ["idaes-examples-pse"] }}
+        uses: checklist
+        with:
+          items:
+            - Open `./docs/conf.py`
+            - Search for `release = `
+            - Change the version so that it looks like `release = ${{ release.next_dev_version_tag }}`
+            - Save and exit
+            - "`git add ./docs/conf.py`"
+      - name: Update version in `./docs/source/conf.py`
+        uses: checklist
+        if: ${{ project.id in ["foqus"] }}
+        with:
+          items:
+            - Open `./docs/source/conf.py`
+            - Search for `version =` and set `version = "${{ release.next_dev_version_tag }}"`
+            - Search for `release =` and set `release = "${{ release.next_dev_version_tag }}"`
+            - Save and exit
+      - name: Update version and dependencies in `./setup.py` (PARETO)
+        uses: checklist
+        if: ${{ project.id in ["pareto"] }}
+        with:
+          items:
+            - Open `./setup.py`
+            - Search for VERSION and update it to `${{ release.next_dev_version_tag }}`
+            - Save and exit
+            - '`git add setup.py`'
+      - name: Update version and dependencies in `./setup.py` and `docs/conf.py` (WaterTAP, DISPATCHES)
+        uses: checklist
+        if: ${{ project.id in ["watertap", "dispatches"] }}
+        with:
+          items:
+            - Open `./setup.py`
+            - Search for `version=` (in the kwargs for the call to `setup()`) and set `version="${{ release.next_dev_version_tag }}"`
+            - Save and exit
+            - Open `./docs/conf.py`
+            - Search for `version =` and set `version = "${{ release.next_dev_version_tag }}"`
+            - Search for `release =` and set `release = "${{ release.next_dev_version_tag }}"`
+            - Save and exit
+            - '`git add setup.py docs/conf.py`'
+      - name: Check that the local modifications to the version are as they should
+        run: |
+          git status      # there shouldn't be any other unstaged files
+          git status -vv  # the changes with the version should be there
+      - name: Commit the changes to the default branch
+        run: |
+          # check that we're on the default branch
+          test "$(git branch --show-current)" = "${{ project.github.default_branch }}" && git commit -m "${{ release.next_dev_version_tag }}"
+      - name: Review the changes before pushing
+        run: |
+          git log --oneline -n 5  # it should show only one commit which is not pushed
+          git push --dry-run
+      - name: Push the changes
+        run: |
+          git push
+
+  github-release:
+    name: Creating the GitHub release
+    steps:
+      - name: Generate release notes and create GitHub draft release
+        uses: github-release
+        with:
+          write_file: true
+      - name: Create a ZIP file for the examples and attach it to the release as an asset
+        if: ${{ project.id == "foqus" }}
+        run: |
+          _asset_file_name="ccsi-foqus-${{ release.tag }}-examples.zip"
+          zip -r "$_asset_file_name" examples/
+          gh release upload "${{ release.tag }}" "$_asset_file_name" --repo "${{ project.github.full_name }}"
+      - name: Update the compatibility file on `main`
+        if: ${{ project.id == "idaes-examples-pse" }}
+        uses: checklist
+        with:
+          items:
+            - Navigate to ${{ project.github.url }}/edit/main/idaes-compatibility.json
+            - 'Add a line under the `mapping` key with the new version, typically `"${{ release.tag }}": "${{ release.tag }}"`'
+              
+      - name: Check that the GitHub release was created successfully
+        uses: checklist
+        with:
+          items:
+            - Go to ${{ release.github_release_url }}
+            - If "Draft", click on ${{ release.github_release_edit_url }} to remove the "Draft" marker
+      - name: Check that the release tag has been created in the repo
+        run: curl -sL ${{ release.github_archive_url }} | sha256sum
+        x-note: |
+
+          - The release needs to be undrafted for this to work
+          - Use `wget` if `curl -sL` doesn't work
+
+  delete-release:
+    name: Deleting the release (if needed)
+    steps:
+      - name: Delete the release on GitHub
+        run: |
+          # add the --yes flag to skip confirmation prompt
+          gh release delete --repo ${{ project.github.full_name }} "${{ release.tag }}"
+      - name: Delete the tag on the remote
+        run: |
+          pushd "$(mktemp -d)"
+          ${{ release.clone_branch_command }}
+          git push --delete ${{ project.git_push_remote }} "refs/tags/${{ release.tag }}"
+      - name: Delete the tag locally
+        run: |
+          git tag --delete "${{ release.tag }}"
+
+  docs:
+    name: Checking the docs (ReadTheDocs)
+    if: ${{ project.id not in ["idaes-examples-pse"] }}
+    steps:
+      - name: Check the ReadTheDocs build
+        uses: checklist
+        with:
+          items:
+            - Go to ${{ project.readthedocs.builds_url }} and check that the build for `${{ release.tag }}` has been run successfully
+            - If not, edit the version at ${{ release.docs_version_url }} so that it starts building 
+            - If the previous step didn't work, go to ${{ project.readthedocs.versions_url }}, search for the `${{ release.tag }}` version, and click on "Edit"
+      - name: Check that the `${{ release.tag }}` tag is available on ReadTheDocs
+        uses: checklist
+        with:
+          items:
+            - Manually, at ${{ release.docs_url }}
+            - '`curl -sL "${{ project.readthedocs.url }}/en/${{ release.tag }}" | grep "/${{ release.tag }}/"`'
+            - '`curl -sL "${{ project.readthedocs.url }}/en/${{ release.tag }}" | grep "Versions" --after 10 | grep "/${{ release.tag }}/"`'
+      - name: Check that the ReadTheDocs revision (commit) on `latest` matches the release tag
+        run: |
+          curl -sL "${{ project.readthedocs.url }}/en/${{ release.tag }}" | grep "Revision"
+          curl -sL "${{ project.readthedocs.url }}/en/latest" | grep "Revision"
+          curl -sL "${{ project.readthedocs.url }}" | grep "Revision"
+      - name: Check that the ReadTheDocs revision (commit) on `stable` matches the release tag
+        if: ${{ release.is_final }}
+        run: |
+          curl -sL "${{ project.readthedocs.url }}/en/${{ release.tag }}" | grep "Revision"
+          curl -sL "${{ project.readthedocs.url }}/en/stable" | grep "Revision"
+
+  python-package:
+    name: Creating the `${{ project.python.name }}` Python package distribution
+    if: ${{ project.python.name }}
+    steps:
+      - name: In a clean directory, clone the repo and switch to the release branch
+        run: |
+          pushd "$(mktemp -d)"
+          ${{ release.clone_branch_command }}
+          # check that the branch is at the ${{ release.tag }} tag
+          git tag --list | grep "${{ release.tag }}"
+      - name: Create a new Conda environment for building the package and activate it
+        run: |
+          # bash/zsh
+          _build_env_name="build-${{ project.python.name }}-${{ release.tag }}"
+          conda create --yes python=${{ project.python.default_python_version }} pip setuptools wheel twine --name "$_build_env_name" && conda activate "$_build_env_name"
+          # test that the pip executable is the one from the environment
+          which pip | grep "$_build_env_name"
+      - name: Install the package (**NO EDITABLE MODE**)
+        run: |
+          pip install --no-cache-dir .
+      - name: Check that the installed package has the proper tags
+        run: |
+          pip list | grep "${{ release.tag }}"
+          pip show ${{ project.python.name }} | grep "${{ release.tag }}"
+      - name: Run "smoke tests" for the installed package (**once uploaded to PyPI, IT CANNOT BE DELETED!**)
+        run: |
+          ${{ project.python.smoke_test_command }}
+      - name: Remove large directories to avoid exceeding size limits
+        if: ${{ project.id == "foqus" }}
+        run: rm -r ./examples/
+      - name: Build the `sdist` and `bdist_wheel` distributions
+        run: python setup.py sdist bdist_wheel
+      - name: Check that the directory size is below PyPI's maximum
+        run: |
+          ls -lh dist/*
+          _maxsize=100000  # 100 MB
+          _dirsize=$(du -s dist/ | cut -f 1) ; echo $_dirsize
+          [ "$_dirsize" -lt "$_maxsize" ]
+      - name: Upload the distributions to the test PyPI
+        run: |
+          # bash/zsh
+          # assumes that the ~/.pypirc config file exists and defines the "testpypi" repository
+          grep "\[testpypi\]" ~/.pypirc && twine upload --repository testpypi dist/*
+        x-note: It might take a while for the uploaded package to become available for `pip install`
+      - name: Test package from test PyPI in a dedicated temp Conda environment
+        run: |
+          _test_env_name="test-${{ project.python.name }}-${{ release.tag }}"
+          conda create --yes python=${{ project.python.default_python_version }} --name "$_test_env_name" && conda activate "$_test_env_name"
+          which pip | grep "$_test_env_name"
+          pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple "${{ release.pypi_target }}"
+          ${{ project.python.smoke_test_command }}
+          conda deactivate && conda env remove --name "$_test_env_name"
+      - name: Upload the distributions to the **real** PyPI
+        run: |
+          conda activate "$_build_env_name"
+          # assumes that the ~/.pypirc config file exists and defines the "realpypi" repository
+          grep "\[realpypi\]" ~/.pypirc && twine upload --repository realpypi dist/*
+        x-note: It might take a while for the uploaded package to become available for `pip install`
+
+  build-examples:
+    name: Build and deploy examples using containers
+    if: ${{ project.id in ["idaes-examples-pse"] }}
+    steps:
+      - name: Log in into build system
+        run: ssh shylock
+      - name: Set up environment and build examples docs using Docker
+        run: |
+          type docker docker-compose || conda activate gha-runner
+          pushd "$(mktemp -d)"
+          git clone git@github.com:lbianchi-lbl/idaes-ci-self-hosted-runner.git && cd idaes-ci-self-hosted-runner
+          IDAES_VERSION="${{ release.tag }}" docker-compose build idaes-pse examples-pse
+          # after this, by default, the container will be stopped but still available for `docker cp`ing things out of it
+          IDAES_VERSION="${{ release.tag }}" RUNNER_SOLVERS_HOST_DIR="$HOME/opt" docker-compose up examples-pse
+          popd
+      - name: Copy HTML docs to `gh-pages` branch of examples-pse
+        run: |
+          _container_name="examples-pse-${{ release.tag }}"
+          pushd "$(mktemp -d)"
+          git clone --depth 1 --branch "gh-pages" ${{ project.git_clone_target }} examples-pse-gh-pages && cd examples-pse-gh-pages
+          docker cp "$_container_name":/home/runner/examples-pse/docs/_build/html/. "${{ release.tag }}"
+          # the symlink `latest` must be removed and recreated in order to show up as "modified" for git
+          rm latest && ln -sf "${{ release.tag }}" latest
+          git add "${{ release.tag }}" latest
+      - name: Check and commit before pushing
+        run: |
+          # ensure that `latest` has been modified
+          git status --short latest | grep M
+          git commit -m "docs for ${{ release.tag }}"
+          git log --oneline -n 5
+      - name: Push
+        run: |
+          git push --dry-run
+          git push
+
+  build-examples-manual:
+    name: Build and deploy examples
+    if: ${{ project.id in ["idaes-examples-pse"] }}
+    steps:
+      - name: Log in into build system
+        run: ssh shylock
+      - name: Set up environment
+        run: |
+          # bash/zsh
+          pushd "$(mktemp -d)"
+          _build_env_name="build-examples-pse-${{ release.tag }}"
+          conda create --yes --name "$_build_env_name" python=3.8 pip=21.1 && conda activate "$_build_env_name"
+          pip install idaes-pse=="${{ release.tag }}"
+          idaes --version | grep "${{ release.tag }}"
+          idaes get-extensions --verbose
+          export GUROBI_HOME=~/opt/gurobi911/linux64 && PATH=$(idaes bin-directory):~/opt/ibm/ILOG/CPLEX_Studio_Community129/cplex/bin/x86-64_linux/:~/opt/alamo-linux64:~/opt/baron-lin64:$GUROBI_HOME/bin:$PATH && LD_LIBRARY_PATH=$GUROBI_HOME/lib:$LD_LIBRARY_PATH
+          python -c 'import idaes; from pyomo.environ import SolverFactory as SF; print({s: SF(s).available() for s in "ipopt cplex alamo baron gurobi".split()})'
+      - name: Clone and build `examples-pse`
+        run: |
+          git clone --depth 1 --branch "${{ release.tag }}" ${{ project.git_clone_target }} && cd examples-pse
+          # check requirements.txt to see if the IDAES version is correct, or remove it altogether if already installed
+          pip install -r requirements.txt
+          # build notebook index
+          python build.py -v -x
+          # -w 1: disable parallelism because of dependencies between notebooks
+          python build.py -v -cdr -w 1
+      - name: Deploy HTML docs to `gh-pages` branch
+        run: |
+          cd ../
+          git clone --depth 1 --branch "gh-pages" ${{ project.git_clone_target }} examples-pse-gh-pages && cd examples-pse-gh-pages
+          cp -r ../examples-pse/docs/_build/html "${{ release.tag }}"
+          # remove files larger than 100M otherwise the push will be rejected by GH
+          find "${{ release.tag }}" -type f -size +100M -exec 'rm {} \;'
+          # the symlink `latest` must be removed and recreated in order to show up as "modified" for git
+          # rm latest && ln -sf "${{ release.tag }}" latest
+          # NOTE: gh-pages seems to have stopped supporting symlinks that now cause an error on push
+          # ("site contains a symlinks that should be dereferenced")
+          # the solution is to just hard-copy the directory to create the `latest` URL endpoint
+          cp -r "${{ release.tag }}" latest
+          git add "${{ release.tag }}" latest
+          # ensure that `latest` has been modified - N/A anymore
+          # git status --short latest | grep M
+          git commit -m "docs for ${{ release.tag }}"
+          git push
+
+  environment-info:
+    name: Collect environment info for the release
+    steps:
+      - name: Install from PyPI
+        run: |
+          # bash/zsh
+          _rel_prefix="${{ project.python.name }}-${{ release.tag }}"
+          _env_name="${_rel_prefix}-env"
+          _conda_file_name="environment-${_rel_prefix}.yml"
+          _pip_file_name="requirements-${_rel_prefix}.txt"
+          conda create --yes python=${{ project.python.default_python_version }} --name "$_env_name" && conda activate "$_env_name"
+          which pip | grep "$_env_name"
+          pip install "${{ release.pypi_target }}"
+      - name: Save environment info
+        run: |
+          pushd "$(mktemp -d)"
+          conda env export --no-builds -n "$_env_name" -f "$_conda_file_name"
+          pip freeze > "$_pip_file_name"
+          cat "$_conda_file_name" "$_pip_file_name"
+      - name: Upload as GitHub release assets
+        run: |
+          gh release upload "${{ release.tag }}" "$_conda_file_name" "$_pip_file_name" --repo "${{ project.github.full_name }}" 
+          conda deactivate && conda env remove -n "$_env_name" && popd
+      - name: Check that the assets are available
+        uses: checklist
+        with:
+          items:
+            - <${{ release.github_release_url }}>
+
+  announce:
+    name: Announce the release
+    steps:
+      - name: Internally
+        uses: summary
+        with:
+          content: |
+            Release {{ tag }} is up!
+
+            - GitHub: {{ github_release_url }}
+            - PyPI: {{ pypi_url }}
+            - ReadTheDocs: {{ docs_url }}
+      - name: Announce the release
+        if: release.is_final
+        uses: checklist
+        with:
+          items:
+            - 'Via an email to the leadership, lab and users list (**TODO**: add template)'

@@ -1,0 +1,48 @@
+project:
+  id: idaes-ui
+  name: IDAES UI
+  github:
+    org: IDAES
+    name: idaes-ui
+  readthedocs:
+    slug: idaes-ui
+    project_name: IDAES UI
+  python:
+    name: idaes-ui
+    default_python_version: '3.10'
+    test_commands:
+      - idaes get-extensions --verbose && pip install pytest && pushd "$(mktemp -d)" && wget https://raw.githubusercontent.com/IDAES/idaes-pse/main/pytest.ini && pytest --pyargs idaes -m "not integration" ; popd
+  releasing:
+    notes_template: |
+      # {{ tag }} Release
+
+      Start with our [online documentation]({{ docs_url }}) to get started with install instructions, examples, etc.
+
+      ## Highlights
+
+      {{ highlights_text }}
+    cycles: {}
+
+releases:
+  "0.24.8":
+    release_branch: release/0.24.8.x
+    next_dev_version_tag: 0.24.9.dev0
+    highlights_text: |
+      - Minor changes for compatibility with IDAES 2.6
+  "0.24.6":
+    release_branch: release/0.24.6.x
+    next_dev_version_tag: "0.24.7.dev0"
+    highlights_text: |
+      ### UI updates
+      - Reorganized UI function buttons: UI buttons are now grouped in a dedicated panel for easier access based on their use case
+      - New layout management system: You can now drag, rearrange, and resize UI panels to fit your needs
+      - New panels:
+        - Added a "Diagnostics" panel
+        - Added a "Diagnostics Logs" panel
+      ### Model diagnostics functionality
+      - The UI can now communicate with the IDAES DiagnosticsToolBox and display model diagnostics results (cautions, warnings, and suggested next steps) in the "Diagnostics" panel
+      - You can execute the suggested next steps directly from the UI, and the DiagnosticsToolBox logs will be displayed in the "Diagnostics Logs" panel
+      ### Other functionality
+      - Export SVG function is coming back
+  "0.23.12":
+    next_dev_version_tag: "0.24.1.dev0"

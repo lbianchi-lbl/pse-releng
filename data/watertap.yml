@@ -1,0 +1,389 @@
+project:
+  id: watertap
+  name: WaterTAP
+  github:
+    org: watertap-org
+    name: watertap
+  readthedocs:
+    slug: watertap
+    project_name: watertap
+  python:
+    name: watertap
+    default_python_version: '3.11'
+    test_commands:
+      # - pushd "$(mktemp -d)" && pip install "watertap[testing]" && idaes get-extensions --verbose && pytest --pyargs watertap ; popd
+      - pushd "$(mktemp -d)" && { pip install "watertap[testing]" && pytest --pyargs watertap ; } ; popd
+    pypi_user: lbianchi-lbl
+  releasing:
+    notes_template: |
+      # {{ notes_title }}
+
+      Start with our [online documentation]({{ docs_url }}) to get started with install instructions, examples, etc.
+
+      ## WaterTAP {{ tag }} Release Highlights
+      {% for item in highlights -%}
+      - {{ item }}
+      {% endfor %}
+      {{ highlights_text }}
+    cycles:
+      '0.12': {year: 2024, month: 3}
+      '0.11': {year: 2023, month: 12}
+      '0.10': {year: 2023, month: 9}
+      '0.9': {year: 2023, month: 6}
+      '0.8': {year: 2023, month: 3}
+      '0.7':
+        year: 2022
+        month: 12
+      '0.6':
+        year: 2022
+        month: 9
+      '0.5':
+        year: 2022
+        month: 6
+      '0.4':
+        year: 2022
+        month: 3
+      '0.3':
+        year: 2021
+        month: 12
+
+releases:
+  '1.0.0':
+    refs_to_cherrypick: []
+  '1.0.0rc1':
+    refs_to_cherrypick:
+      # #1462
+      - 702123a48d1fec698d044a0c18131464043db33f
+    highlights: []
+  '1.0.0rc0':
+    next_dev_version_tag: 1.1.dev0
+  '0.12.0':
+    highlights: []
+  0.12.0rc0:
+    highlights: []
+    next_dev_version_tag: 1.0.dev0
+  '0.11.0':
+    highlights: []
+
+  '0.11.0rc3':
+    refs_to_cherrypick:
+      # #1275
+      - 6367b1e9ef4982ef8e1d9ade1378513735a8b6cf
+  '0.11.0rc2':
+    refs_to_cherrypick:
+      # #1255
+      - 0454198ff9083cee39254d67e55e5744e06bd754
+
+      # #1261
+      - 65f9749cf6b00b654f53a82f86e5b71495d93332
+
+      # #1267
+      - 264c5d0dc20a036ad9ca683c5e4a358d7349a078
+
+  '0.11.0rc1':
+    refs_to_cherrypick:
+      # #1253
+      - 97c15f47277cbb106e0990e4daa75dcbf2ef125d
+  0.11.0rc0:
+    next_dev_version_tag: 0.12.dev0
+  "0.10.0":
+    highlights: []
+    refs_to_cherrypick:
+      # #1167
+      - 6232ce03121143608b420792aec9c022db898228
+  "0.10.0rc0":
+    highlights: []
+    next_dev_version_tag: 0.11.dev0
+  "0.9.0":
+    highlights:
+      - General bug fixes and code maintenance 
+      - Added a NaCl property model with temperature dependence (useful for evaporative processes)
+      - Refined the mechanical vapor compression flowsheet example
+      - Added rectifier costing method for electrochemical processes
+      - Added an electrolyzer model
+      - Refined electrodialysis costing
+      - Added a modified activated sludge model 
+      - Added a modified Activated Sludge Model No. 2d (ASM2d)
+      - Updated Anaerobic Digestion Model No. 1 (ADM1) and ASM2d translator block
+      - Added auxiliary unit models for Benchmark Simulation Model No. 2 (BSM2) including a dewaterer, thickener, and primary clarifier
+      - Added Jupyter notebook tutorial on nanofiltration with Donnan Steric Pore Model with Dielectric Exclusion (DSPM-DE)
+  "0.9.0rc0":
+    next_dev_version_tag: 0.10.dev0
+
+  "0.8.0":
+    highlights_text: |
+      - General maintenance and bug fixes
+      - Updated WaterTAP to be compatible with IDAES v2.0.0
+      - Updated and refactored property models to include pressure effects in enthalpy and have consistent indexing of variables and constraints
+      - Improved the parameter sweep tool to provide additional functionality
+      - Reorganized model diagnostic tools
+      - Added a new option for membrane processes - a spiral wound friction factor calculation
+      - Added more properties to the multicomponent aqueous solution property package - diffusivities and Laliberte correlation for densities
+      - Added costing for osmotically assisted reverse osmosis (OARO)
+      - Added a simple electrocoagulation model
+      - Added an example dmeonstration of electrodialysis desalination system with recirculation and water recovery control
+      - Added an example demonstration of ion exchange for calcium removal
+      - Added the Anaerobic Digestor Model no. 1 (ADM1), including temperature dependent expressions and a phosphorous extension
+      - Added translator blocks for Activated Sludge Model no. 1 (ASM1) to ADM1 and vice versa 
+      - Added a selective oil permeation model
+      - Refined granular activated carbon model - improving its stability and including more details on auxiliary energy consumption and costing
+      - Added and refined documentation for the following: zero order models, ion exchange, mechanical vapor compression, water property package, ADM1, ASM1 and ADM1 translator blocks
+
+      ### Chemistry/electrochemistry treatment
+
+      - Add electrocoagulation zero-order model, pull request #953, Kurban Sitterley, Srikanth Allu, Gavin Wiggins
+      - Added a flowsheet of electrodialysis desalination system with recirculation and water recovery control. PR #873 -Xiangyu Bi 
+      - MCAS property package maintenance (new set structure and methods, PR #860, PR #896) -Xiangyu Bi, Hunter Barber, Adam Atia  
+      - ED doc maintenance PR #944 -Xiangyu Bi 
+      - Single-stack ED desalination analysis and paper writing in progress.  -Xiangyu Bi 
+      - Planning new electrochemical technology models such as bipolar ED. -Xiangyu Bi 
+      - Planning chlor-alkali membrane electrolyzer unit model - Hunter
+
+      ### Physical/desalination treatment
+
+      - Added basic documentation for mechanical vapor compression (MVC) (#963) - Hunter
+
+      ###-Sorption/UV-AOP
+
+      - GAC model rework and overhaul for improved stability (#954) - Hunter
+      - Added costing options for gravity basins to GAC and GAC_ZO costing models (#960) - Hunter
+      - Added approximate energy consumption of residual, backwash, and booster pumps for pressure vessels and gravity basins in GAC costing models (#960) - Hunter
+
+      ### AMO Detailed model development
+
+      - Modified ADM1 unit model w/Phosphorus Extensions (#948) - Chenyu/Marcus
+      - ADM1/ASM2d Translator unit model (#935 - not in release) - Chenyu/Marcus
+      - Model for ADM1 (#857) -  Alejandro
+      - Updated temperature dependent expressions for ADM1 (#918) - Alejandro
+      - Translator block ADM1-ASM1 (#933) - Alejandro
+      - Translator block ASM1-ADM1 (#962) - Alejandro
+
+      ### Miscellaneous
+
+      - Improvements to WaterTAP Property Packages (#853, #893, #894) - Marcus
+      - Add test to ensure documentation is generated for all ZO unit models (#877) - Marcus
+
+      ### Software Development and Release Management
+
+      - Add items to .gitignore file for ignoring files related to VSCode and Sublime Text editors, pull request #881, Gavin Wiggins
+      - Add documentation for running zero-order models, pull request #921, Gavin Wiggins
+      - Remove myst parser for Markdown support in Sphinx since Markdown is not used for the WaterTAP documentation, pull request #938 and issue #922, Gavin Wiggins
+      - Enabled a subset of pylint static checks (#913, #917, #923, #924, #927) - Ben/Ludovico 
+  "0.8.0rc2":
+    refs_to_cherrypick:
+      # 996
+      - b1432c41e
+  "0.8.0rc1":
+    extra:
+      idaes_pse_version: " ~= 2.0"
+    refs_to_cherrypick:
+      # 983
+      - b100435
+
+      # 948
+      - 7d14f22
+
+      # 989
+      - 2b75c82
+  "0.8.0rc0":
+    next_dev_version_tag: 0.9.dev0
+    extra:
+      idaes_pse_version: "~=2.0"
+  "0.7.0":
+    extra:
+      ideas_pse_version: ">=2.0.0b2"
+  "0.7.0rc1":
+    extra:
+      ideas_pse_version: ">=2.0.0b2"
+  "0.7.0rc0":
+    extra:
+      idaes_pse_version: ">=2.0.0b2"
+    next_dev_version_tag: 0.8.dev0
+  "0.6.0":
+    extra:
+      idaes_pse_version: "==2.0.0a3"
+    highlights:
+      - "Implemented an initial graphical user interface (GUI) - application is deployed as a simple one-click install on Windows, MacOS, and Linux and includes functionality for: visualizing prebuilt flowsheets; adjusting their inputs; and saving, loading, and comparing solutions"
+      - Created and connected flowsheets to the GUI representing the water resource recovery systems under DE-FOA0002336 portfolio
+      - Updated documentation for model refinements and added pages for the zero order unit models
+      - Updated and fixed bugs in some zero order unit models
+      - Added an introductory tutorial
+      - Added a pump model with part-load-performance and an efficiency-flow correlation
+      - Added an ion exchange model with costing  (Cation and anion exchange demonstrations)
+      - Refactored membrane models to use a new base component called a membrane channel
+      - Refined nanofiltration DSPM-DE model and tests
+      - Refined the simple electrolyte property model (DSPM-DE)
+      - Refined and added costing for mechanical vapor compression (MVC) model
+      - Refined and added costing for granular activated carbon (GAC) model
+      - Refined and added costing for ultraviolet (UV) and UV advanced oxidation process models
+      - Refined electrodialysis model and added a flowsheet demonstration
+      - Refined ASM1 and ASM2d models and added full wastewater treatment train demonstrations for each
+      - Improved the WaterTAP costing package
+      - Enhanced the parameter sweep tool
+      - Updated WaterTAP to address deprecations from IDAES
+  0.6.0rc1:
+    refs_to_cherrypick:
+      # 647
+      - 43cd99e
+
+      # 774
+      - c226025
+
+      # 744
+      - e43bb2e
+
+      # 745
+      - 0505f57
+
+      # 768
+      - 054411e
+
+      # 754
+      - 6ec266d
+
+      # 790
+      - e77f63d
+
+      # 713
+      - ac67424
+
+      # 789
+      - fb8424f
+
+      # 792
+      - 39eafd4
+
+      # 794
+      - f39f72e
+
+      # 793
+      - c71b898
+
+      # 795
+      - 2ff59ef
+
+      # 798
+      - 107fc45
+
+      # 799
+      - eda4781
+
+      # 802
+      - d9a8be3
+      - cb1e9ff
+      - 97aae5f
+      # - '1079169'
+
+    extra:
+      idaes_pse_version: '==2.0.0a3'
+    highlights:
+      - "Implemented an initial graphical user interface (GUI) - application is deployed as a simple one-click install on Windows, MacOS, and Linux and includes functionality for: visualizing prebuilt flowsheets; adjusting their inputs; and saving, loading, and comparing solutions"
+      - Created and connected flowsheets to the GUI representing the water resource recovery systems under DE-FOA0002336 portfolio
+      - Updated documentation for model refinements and added pages for the zero order unit models
+      - Updated and fixed bugs in some zero order unit models
+      - Added an introductory tutorial
+      - Added a pump model with part-load-performance and an efficiency-flow correlation
+      - Added an ion exchange model with costing  (Cation and anion exchange demonstrations)
+      - Refactored membrane models to use a new base component called a membrane channel
+      - Refined nanofiltration DSPM-DE model and tests
+      - Refined the simple electrolyte property model (DSPM-DE)
+      - Refined and added costing for mechanical vapor compression (MVC) model
+      - Refined and added costing for granular activated carbon (GAC) model
+      - Refined and added costing for ultraviolet (UV) and UV advanced oxidation process models
+      - Refined electrodialysis model and added a flowsheet demonstration
+      - Refined ASM1 and ASM2d models and added full wastewater treatment train demonstrations for each
+      - Improved the WaterTAP costing package
+      - Enhanced the parameter sweep tool
+      - Updated WaterTAP to address deprecations from IDAES
+  0.6.0rc0:
+    next_dev_version_tag: 0.7.0dev
+    extra:
+      idaes_pse_version: '==2.0.0a3'
+    highlights:
+      - Flowsheet UI
+  0.5.0:
+    extra:
+      idaes_pse_version: '==2.0.0a2'
+    highlights:
+      - Fixed bugs and implemented maintenance improvements
+      - Standardized and renamed property variables across property packages
+      - Enhanced the costing packages
+      - Modified the coagulation-flocculation model and added documentation
+      - Added an energy recovery device based on a pelton turbine
+      - Added an initial 0D and 1D electrodialysis model (NaCl solution demonstration)
+      - Added a simple boron removal unit operation based on pH swing with documentation
+      - Added an example for the electrolyte database (EDB) using the Mongo cloud database
+      - Added costing and documentation for the crystallizer model (NaCl solution demonstration)
+      - Added an initial granular activated carbon model (1,2-Dichloroethane and Trichloroethylene demonstration)
+      - Added an initial ultraviolet advanced oxidation process model (NDMA demonstration)
+      - Added simple models of core wastewater treatment technologies under DE-FOA0002336 portfolio
+      - Added initial ASM1 and ASM2d models for representing activated sludge processes
+      - Refined low salt rejection cost optimization example
+      - Refined the nanofiltration model based on Donnan Steric Pore Model with Dielectric Exclusion by fixing a bug in the model and verifying the model performs as expected
+      - Fixed some errors in simple models merged in from WaterTAP3
+  0.5.0rc1:
+    extra:
+      idaes_pse_version: '==2.0.0a2'
+    refs_to_cherrypick:
+      - 85b2599cb82832da6f65c239844c00163fd80760
+      - 4ce1386f6c9682db218437c823ab2ce5945e9aee
+    highlights:
+      - Fixed bugs and implemented maintenance improvements
+      - Standardized and renamed property variables across property packages
+      - Enhanced the costing packages
+      - Modified the coagulation-flocculation model and added documentation
+      - Added an energy recovery device based on a pelton turbine
+      - Added an initial 0D and 1D electrodialysis model (NaCl solution demonstration)
+      - Added a simple boron removal unit operation based on pH swing with documentation
+      - Added an example for the electrolyte database (EDB) using the Mongo cloud database
+      - Added costing and documentation for the crystallizer model (NaCl solution demonstration)
+      - Added an initial granular activated carbon model (1,2-Dichloroethane and Trichloroethylene demonstration)
+      - Added an initial ultraviolet advanced oxidation process model (NDMA demonstration)
+      - Added simple models of core wastewater treatment technologies under DE-FOA0002336 portfolio
+      - Added initial ASM1 and ASM2d models for representing activated sludge processes
+      - Refined low salt rejection cost optimization example
+      - Refined the nanofiltration model based on Donnan Steric Pore Model with Dielectric Exclusion by fixing a bug in the model and verifying the model performs as expected
+      - Fixed some errors in simple models merged in from WaterTAP3
+  0.5.0rc0:
+    next_dev_version_tag: 0.6.0dev
+    extra:
+      idaes_pse_version: '==2.0.0a2'
+  0.4.0:
+    next_dev_version_tag: 0.5.0dev
+    extra:
+      idaes_pse_version: '==2.0.0a0'
+  0.4.0rc1:
+    next_dev_version_tag: 0.5.0dev
+    extra:
+      idaes_pse_version: '==2.0.0a0'
+  0.4.0rc0:
+    next_dev_version_tag: 0.5.0dev
+    extra:
+      idaes_pse_version: '==2.0.0a0'
+  0.3.1:
+    refs_to_cherrypick:
+      - e1641cb62  # 289
+    highlights:
+      - "Updated model initialization after a bug affecting WaterTAP was fixed in IDAES 1.12.1 (#287, #289)"
+  '0.3.0':
+    refs_to_cherrypick: []
+    notes: |
+      # {{ notes_title }}
+
+      WaterTAP is an open-source water treatment model library that is compatible with the IDAES Platform (https://idaes.org), an advanced process systems engineering tool developed by the U.S. Department of Energy.
+
+      Documentation is located at {{ docs_url }}.
+
+      ## {{ tag }} Release Highlights:
+
+      - Updated the name from ProteusLib to WaterTAP
+      - Reorganized repository to prepare the merger of WaterTAP3 model and data
+      - Added zero-order base class models that will form the basis of most WaterTAP3 models
+      - Updated all chemistry tests to use new IDAES log formulations Updated the electrolyte database (EDB) EDB by removing out of date information, leveraging MongoDB, and allowing users to control the output and customize the reaction order
+      - Added tests demonstrating the precipitation in equilibrium processes including remineralization, water softening, phosphorous removal
+      - Added more documentation on the EDB
+      - Updated zero-order nanofiltration model to be compatible with the IDAES generic property package
+      - Added utilities to automatically use improved scaling methods (gradient based jacobian scaling)
+      - Partially refactored membrane models to centralize function that write common constraints
+    extra:
+      idaes_pse_version: '>=1.12.0'

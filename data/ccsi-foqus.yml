@@ -1,0 +1,185 @@
+project:
+  id: foqus
+  name: CCSI-FOQUS
+  github:
+    org: CCSI-Toolset
+    name: FOQUS
+    default_branch: master
+  readthedocs:
+    slug: foqus
+    project_name: foqus
+  python:
+    name: ccsi-foqus
+    default_python_version: '3.10'
+    test_commands:
+      - foqus -w "$(mktemp -d)"
+  releasing:
+    notes_template: |
+      # {{ notes_title }}
+
+      Start with our [online documentation]({{ docs_url }}) to get started with install instructions, examples, etc.
+
+      Note: Download the below `ccsi-foqus-{{ tag }}-examples.zip` file for all the CCSI-FOQUS examples, tutorials and test files.
+
+      ## {{ tag }} Release Highlights:
+
+      {% for item in highlights -%}
+      - {{ item }}
+      {% endfor %}
+    cycles:
+      "3.11": {year: 2021, month: 9}
+      "3.12": {year: 2021, month: 12}
+      "3.13": {year: 2022, month: 3}
+      "3.15": {year: 2022, month: 9}
+      "3.16": {year: 2022, month: 12}
+      "3.17": {year: 2023, month: 3}
+      "3.18": {year: 2023, month: 6}
+      "3.19": {year: 2023, month: 9}
+      "3.20": {year: 2023, month: 12}
+
+releases:
+  "3.22.0": {}
+  "3.22.0rc0":
+    next_dev_version_tag: 3.23.dev0
+
+  "3.21.0":
+    refs_to_cherrypick:
+
+    # #1215
+    - ec385e83e63711420caad1b8feac8046304f6366
+  "3.21.0rc1":
+    refs_to_cherrypick:
+      # #1208
+      - 1161d04eea5fe477dbf8f58eb1c1db73b218cf25
+
+      # #1210
+      - 47053af44897bbbe5b0b79c19421f40cd6d9b124
+    highlights:
+      - Parallelization support for SDoE computations using Dask (preliminary)
+      - Python version support has been extended. FOQUS is now compatible with Python 3.8 through 3.12
+      - Expanded platforms used for automated testing to include macOS ARM (Apple Silicon)
+  "3.21.0rc0":
+    next_dev_version_tag: 3.22.dev0
+    highlights:
+      - Parallelization support for SDoE computations using Dask (preliminary)
+      - Python version support has been extended. FOQUS is now compatible with Python 3.8 through 3.12
+      - Expanded platforms used for automated testing to include macOS ARM (Apple Silicon)
+  "3.20.0": {}
+  "3.20.0rc1":
+    refs_to_cherrypick:
+    # #1187
+      - 9faf1d826b0da947730a98f778636db5fb95c849
+
+    highlights: []
+  "3.20.0rc0":
+    next_dev_version_tag: 3.21.dev0
+  "3.19.0":
+    highlights: []
+  "3.19.0rc0":
+    highlights: []
+    next_dev_version_tag: 3.20.dev0
+  "3.18.0":
+    highlights: []
+  "3.18.0rc1":
+    highlights: []
+    refs_to_cherrypick:
+      # issue #1159
+      - cb85b8fbc00cd2a9748151493ef469ea901a4a66
+
+  "3.18.0rc0":
+    highlights: []
+    next_dev_version_tag: 3.19.dev0
+
+  "3.17.1":
+    highlights: []
+  "3.17.1rc0":
+    highlights: []
+    refs_to_cherrypick:
+
+      # 1138
+      - f3ea25fd6a50813902c37f47d21d698e0bb99265
+
+      # 1133
+      - 44801da484324ce48f3ab97a605e1b615f6c47bb
+
+      # 1137
+      - a022cd903ab853af839f1d605594e27a4df40125
+
+      # 1140
+      - 7553a9da1003859d9def22a4357a8972bd04f31b
+
+      # 1134
+      - 16ff7ad29b4e2a264a3f6f3d9433e6e5ea888642
+
+  "3.17.0":
+    highlights: []
+  "3.17.0rc1":
+    highlights: []
+    refs_to_cherrypick:
+      # 1129
+      - 9d78993
+
+      # 1128
+      - 62f3de2
+  "3.17.0rc0":
+    next_dev_version_tag: 3.18.dev0
+  "3.16.0rc0":
+    next_dev_version_tag: 3.17.dev0
+  "3.15.0":
+    highlights: []
+  3.15.0rc1:
+    refs_to_cherrypick:
+    # 1066
+    - 22596be
+
+    # 1069
+    - dc325b1
+
+    # 1071
+    - 72f18fd
+  3.15.0rc0:
+    next_dev_version_tag: 3.16.dev0
+    highlights: []
+  3.13.1:
+    refs_to_cherrypick:
+      - 824c23711f962a4e366db0e0822bdbba823430c9
+    highlights:
+      - 'Incorporate changes for multi-platform compatibility of FOQUS dependencies (#1023)'
+  3.13.0:
+    refs_to_cherrypick:
+      - 029fdeefe7e263d10577477b73beec0f35ff061c
+    highlights:
+      - 'SDoE usability improvements (#993, #996)'
+      - 'Adding more capabilities to the Robust Optimality-based Design of Experiments (ODoE) (#905, #980)'
+      - 'Upgrade to [psuade-lite 1.9](https://github.com/LLNL/psuade-lite/releases/tag/v1.9.0)'
+      - 'FOQUS Cloud OUU improvements (#1000, #1001)'
+      - 'New Machine Learning & Artificial Intelligence Plugin (#995)'
+      - 'Introduced GUI integration tests for OUU workflow (#1018)'
+      - "Starting with this release, Python 3.6 is no longer supported. This is due to lack of support for Python 3.6 among several FOQUS dependencies (see #1022). The minimum supported Python version is now 3.7."
+  3.12.0:
+    refs_to_cherrypick:
+      - 1918dc7
+      - dfa6fdf
+    highlights:
+      - 'SDoE GUI improvements (#977, #979)'
+      - 'Improvement and bug fixes for SDoE NUSF (#986, #992)'
+      - 'Various documentation and error reporting improvements (#970, #976, #880, #911, #956, #958, #963)'
+      - 'Testing and coding standards improvements (#984, #975)'
+  3.12.0rc0:
+    highlights: []
+  3.11.0:
+    refs_to_cherrypick:
+      - 17bfd150dae
+      - c5824e7b
+    highlights:
+      # YAML syntax for blocks: ">": convert newline to spaces, "-"": no trailing newline
+      - >-
+        Turbine: compatibility issues have been fixed with the latest released version of
+        SimSinter ([2.1.0.1](https://github.com/CCSI-Toolset/SimSinter/releases/tag/2.1.0.1))
+        and the Turbine Science Gateway ([2.3.0.1](https://github.com/CCSI-Toolset/turb_sci_gate/releases/tag/2.3.0.1))
+      - 'Python compatibility: FOQUS is now fully compatible with Python 3.8'
+      - 'ODoE: Added documentation (#954)'
+      - 'SDoE: added documentation for IRSF (#953, #962)'
+      - 'SM: Added tutorial for SM UQ plugin (#951)'
+      - 'SDoE: added documentation for Data Imputation (#960)'
+      - 'Various bug fixes and enhancements (#941, #946, #938, #949, #956, #961, #963, #966, #968)'

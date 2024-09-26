@@ -1,0 +1,166 @@
+project:
+  id: pareto
+  name: PARETO
+  github:
+    org: project-pareto
+    name: project-pareto
+  readthedocs:
+    slug: pareto
+    project_name: pareto
+  python:
+    name: project-pareto
+    default_python_version: '3.9'
+    test_commands:
+      - pushd "$(mktemp -d)" && pip install pytest && pytest --pyargs pareto ; popd
+      # - pushd "$(mktemp -d)" && pip install pytest && idaes get-extensions --verbose && pytest --pyargs pareto ; popd
+    pypi_user: lbianchi-lbl
+  releasing:
+    notes_template: |
+      # {{ notes_title }}
+
+      Start with our [online documentation]({{ docs_url }}) to get started with install instructions, examples, etc.
+
+      ## PARETO {{ tag }} Release Highlights
+
+      {{ highlights_text }}
+      {% for item in highlights -%}
+      - {{ item }}
+      {% endfor %}
+    cycles:
+      '0.10': {year: 2023, month: 12}
+      '0.9': {year: 2023, month: 9}
+      '0.8':
+        year: 2023
+        month: 7
+      '0.7':
+        year: 2023
+        month: 3
+      '0.6':
+        year: 2023
+        month: 2
+      '0.5':
+        year: 2022
+        month: 12
+      '0.4':
+        year: 2022
+        month: 9
+      '0.2':
+        year: 2022
+        month: 03
+      '0.1':
+        year: 2022
+        month: 02
+releases:
+  "1.0.0":
+    highlights_text: ""
+  1.0.0rc2:
+    refs_to_cherrypick:
+
+    # #334
+    - 2566d7858594f855aa032bfe0ee14bdcfce14a7c
+
+    # #337
+    - 9f6362c19c70849b6d9ea7cad71a7453de29e8e9
+
+    # #338
+    - 068e70df2d9c95a10bdbb9a5f2e508c308be279e
+
+    # #339
+    - f00f5bf0581f9e3dc40a89e8b9b41a1151e8211a
+
+    # #340
+    - fbad3ebee74b1f99eee9d3b89dcb2aeb5db1f78b
+
+    # #341
+    - 25852775369d9503764dd5570be87d8e507fe6e8
+  1.0.0rc1:
+    refs_to_cherrypick:
+
+    # #333
+    - 941aa38fd6eb30a8b68de37267d05e1399ce4244
+  "1.0.0rc0":
+    next_dev_version_tag: 1.1.dev0
+  "0.10.0":
+    refs_to_cherrypick:
+    - deadbeef
+
+  "0.10.0rc0":
+    next_dev_version_tag: 0.11.dev0
+  "0.9.0":
+    highlights_text: |
+      ## What's Changed
+      ### New Features
+      *  Initial beneficial reuse implementation by @tarnold17 and @ElmiraShamlou in https://github.com/project-pareto/project-pareto/pull/255
+      *  Post-optimization timing for infrastructure buildout by @melody-shellman in https://github.com/project-pareto/project-pareto/pull/272
+      ### Bug Fixes
+      * Address Pyomo solver bug for UI Gurobi solve by @melody-shellman in https://github.com/project-pareto/project-pareto/pull/271
+      * Update Toy Case Study to feasible data for hydraulics post_process by @melody-shellman in https://github.com/project-pareto/project-pareto/pull/273
+      * Update Jupyter notebook for fall release by @tarnold17 in https://github.com/project-pareto/project-pareto/pull/275
+      ### UI Updates
+      * Added functionality to optimize with hydraulics options
+      * Added new plots to KPI dashboard for water quality and hydraulics timelines
+
+      **Full Changelog**: https://github.com/project-pareto/project-pareto/compare/0.8.0...0.9.0
+  "0.9.0rc1": {}
+  "0.9.0rc0":
+    next_dev_version_tag: 0.10.dev0
+  "0.8.0":
+    highlights_text: |
+      ### Model Updates
+      * Applied unified sets for pipeline and trucking arcs in strategic model @nareshsusarla in https://github.com/project-pareto/project-pareto/pull/174
+      * Apply unified sets for pipeline and trucking arcs in operational model by @melody-shellman in https://github.com/project-pareto/project-pareto/pull/241
+      * Added new config argument for removal efficiency calculation method by @ElmiraShamlou in https://github.com/project-pareto/project-pareto/pull/228
+      * Standardized bidirectional capacity constraint  by @nareshsusarla in https://github.com/project-pareto/project-pareto/pull/248
+      * Added dependencies removed in IDAES 2.1 by @lbianchi-lbl in https://github.com/project-pareto/project-pareto/pull/260 
+      * Created bounding functions & utilities by @Tominapa in https://github.com/project-pareto/project-pareto/pull/254
+      * Added Hydraulics module to the strategic model by @nareshsusarla in https://github.com/project-pareto/project-pareto/pull/173
+      * Add additional arc types to strategic model by @tarnold17 in https://github.com/project-pareto/project-pareto/pull/261
+
+      ### Documentation and Tutorial Updates
+      * Improved PARETO treatment document by @ElmiraShamlou in https://github.com/project-pareto/project-pareto/pull/229
+      * Introduced general tutorial and treatment module Jupyter notebooks for Strategic Model  by @tarnold17 in https://github.com/project-pareto/project-pareto/pull/219 and https://github.com/project-pareto/project-pareto/pull/256
+      * Update docs with correct support email list address by @lbianchi-lbl in https://github.com/project-pareto/project-pareto/pull/262
+      * Consolidate and deduplicate Getting Started and resources for developers by @lbianchi-lbl in https://github.com/project-pareto/project-pareto/pull/267
+      * Enable Black formatting for Jupyter notebooks by @lbianchi-lbl in https://github.com/project-pareto/project-pareto/pull/269
+      * Add Binder configuration files and README by @lbianchi-lbl in https://github.com/project-pareto/project-pareto/pull/265
+
+      ### Bug Fixes
+      * Fix strategic model documentation typos by @tarnold17 in https://github.com/project-pareto/project-pareto/pull/244
+      * Removed duplicated units from output file header @nareshsusarla in https://github.com/project-pareto/project-pareto/pull/266
+
+      ### UI Updates
+      * Added view for comparing different scenarios in https://github.com/project-pareto/pareto-ui/pull/36 and https://github.com/project-pareto/pareto-ui/pull/38 and https://github.com/project-pareto/pareto-ui/pull/40
+      * Added functionality for manually overriding PARETO decisions in https://github.com/project-pareto/pareto-ui/pull/41 
+
+      ### New Contributors
+      * @Tominapa made their first contribution in https://github.com/project-pareto/project-pareto/pull/254
+
+      **Full Changelog**: https://github.com/project-pareto/project-pareto/compare/0.7.0...0.8.0
+  "0.8.0rc0":
+    next_dev_version_tag: 0.9.dev0
+  "0.7.0":
+    refs_to_cherrypick: []
+  "0.7.0rc0":
+    refs_to_cherrypick: []
+    next_dev_version_tag: 0.8.dev0
+  "0.6.0":
+    refs_to_cherrypick: []
+  0.6.0rc1:
+    refs_to_cherrypick: []
+  0.6.0rc0:
+    next_dev_version_tag: 0.7.dev0
+  0.5.0rc0:
+    next_dev_version_tag: '0.6.dev0'
+  0.4.0rc0:
+    next_dev_version_tag: '0.5.dev0'
+  0.2.0:
+    next_dev_version_tag: '0.3.dev0'
+  0.2.0rc1:
+    next_dev_version_tag: '0.3.dev0'
+  0.2.0rc0:
+    next_dev_version_tag: '0.3.dev0'
+  0.1.0rc0:
+    next_dev_version_tag: '0.2.dev0'
+    refs_to_cherrypick: []
+    notes: |
+      First internal release candidate for PARETO (Produced Water Optimization Initiative).

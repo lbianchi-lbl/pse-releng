@@ -1,0 +1,913 @@
+project:
+  id: idaes
+  name: IDAES
+  github:
+    org: IDAES
+    name: idaes-pse
+  readthedocs:
+    slug: idaes-pse
+    project_name: IDAES
+  python:
+    name: idaes-pse
+    # env_prefix: idaes-pse
+    default_python_version: '3.10'
+    test_commands:
+      - idaes get-extensions --verbose && pip install pytest && pushd "$(mktemp -d)" && wget https://raw.githubusercontent.com/IDAES/idaes-pse/main/pytest.ini && pytest --pyargs idaes -m "not integration" ; popd
+  releasing:
+    notes_template: |
+      # {{ notes_title }}
+
+      Start with our [online documentation]({{ docs_url }}) to get started with install instructions, examples, etc.
+
+      ## IDAES-PSE {{ tag }} Release Highlights
+
+      {% for item in highlights -%}
+      - {{ item }}
+      {% endfor -%}
+      {{ highlights_text }}
+    cycles:
+      '2.3': {year: 2023, month: 11}
+      '2.2': {year: 2023, month: 8}
+      '2.1': {year: 2023, month: 5}
+      '2.0':
+        # NOTE this will have to be updated manually to account for the fact
+        # that alpha releases for May and Nov fall under the same 2.0 cycle
+        year: 2023
+        month: 2
+        # year: 2022
+        # month: 8
+        # month: 5
+      '1.14':
+        year: 2022
+        month: 5
+      '1.13':
+        year: 2022
+        month: 2
+      '1.12':
+        year: 2021
+        month: 11
+      '1.11':
+        year: 2021
+        month: 8
+
+releases:
+  "2.6.0rc0":
+    next_dev_version_tag: 2.7.0dev0
+    highlights_text: |
+      ### Deprecations and Removals
+      - Python 3.8 is no longer supported. The supported Python versions are 3.9 through 3.12
+      - The Data Management Framework (DMF) is no longer supported. Importing `idaes.core.dmf` will cause a deprecation warning to be displayed until the next release
+  "2.5.0":
+    highlights_text: |
+      ### Upcoming Changes
+
+      - IDAES will be switching to the new Pyomo solver interface in the next release. Whilst this will hopefully be a smooth transition for most users, there are a few important changes to be aware of.
+        - The new solver interface uses a different version of the IPOPT writer (“ipopt_v2”) and thus any custom configuration options you might have set for IPOPT will not carry over and will need to be reset.
+        - By default, the new Pyomo linear presolver will be activated with ipopt_v2. Whilst are working to identify any bugs in the presolver, it is possible that some edge cases will remain.
+      - IDAES will begin deploying a new set of scaling tools and APIs over the next few releases that make use of the new solver writers.
+      - The old scaling tools and APIs will remain for backward compatibility but will begin to be deprecated.
+
+      ### New Models, Tools and Features
+
+      - New diagnostics check for near-parallel variables and constraints.
+      - New diagnostics tools for identifying causes of infeasibility in models.
+      - New example for creating a custom model of a liquid-liquid extractor unit operation.
+
+      ### Bug Fixes
+
+      - Fixed bug in Gibbs reactor that caused it to appear to have additional spurious degrees of freedom.
+      - Fixed bug in the Modular Property Framework that would cause errors when trying to use phase-based material balances with phase equilibria.
+      - Fixed bug in Modular Properties Framework that caused errors when initializing models with non-vapor-liquid phase equilibria.
+
+      ### Testing and Robustness
+
+      - Deployed the IDAES Diagnostics Toolbox to confirm that there are no structural or numerical issues in the core model libraries.
+      - Additional robustness tests for core model, and some associated improvements in the converge tester class.
+      - Fixed a number of issues that were causing unexpected warnings to be emitted during testing.
+
+      ### Deprecations and Removals
+
+      Removed examples for RIPE tool which has not been supported for a number of releases.
+  "2.5.0rc1":
+    refs_to_cherrypick:
+
+    # #1425
+    - 2ac64179d7b61b353a6e7105c0f166f2bcc742dd
+    highlights_text: |
+      ### Upcoming Changes
+
+      - IDAES will be switching to the new Pyomo solver interface in the next release. Whilst this will hopefully be a smooth transition for most users, there are a few important changes to be aware of.
+        - The new solver interface uses a different version of the IPOPT writer (“ipopt_v2”) and thus any custom configuration options you might have set for IPOPT will not carry over and will need to be reset.
+        - By default, the new Pyomo linear presolver will be activated with ipopt_v2. Whilst are working to identify any bugs in the presolver, it is possible that some edge cases will remain.
+      - IDAES will begin deploying a new set of scaling tools and APIs over the next few releases that make use of the new solver writers.
+      - The old scaling tools and APIs will remain for backward compatibility but will begin to be deprecated.
+
+      ### New Models, Tools and Features
+
+      - New diagnostics check for near-parallel variables and constraints.
+      - New diagnostics tools for identifying causes of infeasibility in models.
+      - New example for creating a custom model of a liquid-liquid extractor unit operation.
+
+      ### Bug Fixes
+
+      - Fixed bug in Gibbs reactor that caused it to appear to have additional spurious degrees of freedom.
+      - Fixed bug in the Modular Property Framework that would cause errors when trying to use phase-based material balances with phase equilibria.
+      - Fixed bug in Modular Properties Framework that caused errors when initializing models with non-vapor-liquid phase equilibria.
+
+      ### Testing and Robustness
+
+      - Deployed the IDAES Diagnostics Toolbox to confirm that there are no structural or numerical issues in the core model libraries.
+      - Additional robustness tests for core model, and some associated improvements in the converge tester class.
+      - Fixed a number of issues that were causing unexpected warnings to be emitted during testing.
+
+      ### Deprecations and Removals
+
+      Removed examples for RIPE tool which has not been supported for a number of releases.
+  2.5.0rc0:
+    next_dev_version_tag: 2.6.0dev0
+    highlights_text: ""
+
+  '2.4.0':
+    highlights_text: |
+      ### Deprecations
+
+      - Convergence Analysis tool (idaes/core/util/convergence): deprecated in favor of new Parameter Sweep tools. To be removed in v3.0.0.
+
+      ### New Beta Capabilities
+
+      - Parameter Sweep Tool (`idaes.core.util.parameter_sweep`)
+        - A new API for defining and performing parameter sweep studies on IDAES models has been developed
+      - Diagnostics Tools (`idaes.core.util.model_diagnostics`)
+        - New methods for identifying duplicate variables and constraints have been added to the diagnostics toolbox
+        - New tools for detecting ill conditioning in Jacobians have been developed and are available in the model_diagnostics module. These provide alternatives to the existing DegeneracyHunter toolbox, and will eventually be merged with this capability, but initial working versions have been provided as beta capabilities for interested users
+        - `IpoptConvergenceAnalysis` (replaces deprecated Convergence Analysis tool):
+          - A new tool for performing convergence analysis studies that leverages the new Parameter Sweep tools has been developed. This tool allows users to define the input parameters to their model and sampling methods for these (leveraging Pysmo's sampling tools) and to then solve their model across the sampled domains and return a summary of the solver performance (IPOPT only)
+
+      ### Improved Models
+
+      - Thickener model (`idaes.models.unit_models.solid_liquid.thickener`)
+        - Improved model to include predictive correlations for unit sizing based on settling velocity measurements (steady-state only)
+      - Modular Property Packages
+        - Added general support for calculating critical properties of mixtures using defined Equation of State modules. New API defined for Equation of State modules in order to define the necessary constraints for calculating critical properties (most EoS modules DO NOT support calculation of critical properties (yet))
+        - Added new methods to Cubic Equation of State module to support calculation of critical properties
+
+      
+  2.4.0rc0:
+    next_dev_version_tag: 2.5.0dev0
+    highlights_text: |
+      ### Deprecations
+
+      - Convergence Analysis tool (idaes/core/util/convergence): deprecated in favor of new Parameter Sweep tools. To be removed in v3.0.0.
+
+      ### New Beta Capabilities
+
+      - Parameter Sweep Tool (`idaes.core.util.parameter_sweep`)
+        - A new API for defining and performing parameter sweep studies on IDAES models has been developed
+      - Diagnostics Tools (`idaes.core.util.model_diagnostics`)
+        - New methods for identifying duplicate variables and constraints have been added to the diagnostics toolbox
+        - New tools for detecting ill conditioning in Jacobians have been developed and are available in the model_diagnostics module. These provide alternatives to the existing DegeneracyHunter toolbox, and will eventually be merged with this capability, but initial working versions have been provided as beta capabilities for interested users
+        - `IpoptConvergenceAnalysis` (replaces deprecated Convergence Analysis tool):
+          - A new tool for performing convergence analysis studies that leverages the new Parameter Sweep tools has been developed. This tool allows users to define the input parameters to their model and sampling methods for these (leveraging Pysmo's sampling tools) and to then solve their model across the sampled domains and return a summary of the solver performance (IPOPT only)
+
+      ### Improved Models
+
+      - Thickener model (`idaes.models.unit_models.solid_liquid.thickener`)
+        - Improved model to include predictive correlations for unit sizing based on settling velocity measurements (steady-state only)
+      - Modular Property Packages
+        - Added general support for calculating critical properties of mixtures using defined Equation of State modules. New API defined for Equation of State modules in order to define the necessary constraints for calculating critical properties (most EoS modules DO NOT support calculation of critical properties (yet))
+        - Added new methods to Cubic Equation of State module to support calculation of critical properties
+
+  "2.3.0":
+    highlights_text: |
+      ### New Features and Models
+
+      - New diagnostics toolboxes and examples
+        - Tutorial for using the DiagnosticsToolbox
+        - Methods to identify potential evaluation errors in models
+        - `SVDToolbox` for performing singular value decomposition analysis on models to identify possible degeneracies and poor scaling
+        - DegeneracyHunter for identifying irreducible degenerate sets in models
+      - Model for solid-liquid separation which takes two inputs (solid and liquid streams) and produces three outlets (solids, liquid entrained with solids and pure liquid)
+      - Example of temperature swing adsorption in `models_extra`
+
+      ### Deprecation Warnings
+
+      - With the update to Pyomo 6.7.0, the plate heat exchanger model has begun failing tests on some CI platforms. If this is not addressed by the February release, this model may be removed due to failing tests. See https://github.com/IDAES/idaes-pse/issues/1294. Offers to help identify the cause and fix this issue are welcome.
+
+      ### Improvements and bug fixes
+
+      - Fixed oversight which precluded using `Mixer` and `Separator` models when inherent reactions were present in property package
+      - Added reporting methods to the `MSContactor` model
+      - Minor corrections in some examples where values were being fixed outside of declared variable bounds
+
+    
+  2.3.0rc2:
+    refs_to_cherrypick:
+    # #1303
+    - 021fb145456c69062fa31863da22097e6556ca5c
+    highlights_text: |
+      ### New Features and Models
+
+      - New diagnostics toolboxes and examples
+        - Tutorial for using the DiagnosticsToolbox
+        - Methods to identify potential evaluation errors in models
+        - `SVDToolbox` for performing singular value decomposition analysis on models to identify possible degeneracies and poor scaling
+        - DegeneracyHunter for identifying irreducible degenerate sets in models
+      - Model for solid-liquid separation which takes two inputs (solid and liquid streams) and produces three outlets (solids, liquid entrained with solids and pure liquid)
+      - Example of temperature swing adsorption in `models_extra`
+
+      ### Deprecation Warnings
+
+      - With the update to Pyomo 6.7.0, the plate heat exchanger model has begun failing tests on some CI platforms. If this is not addressed by the February release, this model may be removed due to failing tests. See https://github.com/IDAES/idaes-pse/issues/1294. Offers to help identify the cause and fix this issue are welcome.
+
+      ### Improvements and bug fixes
+
+      - Fixed oversight which precluded using `Mixer` and `Separator` models when inherent reactions were present in property package
+      - Added reporting methods to the `MSContactor` model
+      - Minor corrections in some examples where values were being fixed outside of declared variable bounds
+
+  2.3.0rc1:
+    highlights_text: |
+      ### New Features and Models
+
+      - New diagnostics toolboxes and examples
+        - Tutorial for using the DiagnosticsToolbox
+        - Methods to identify potential evaluation errors in models
+        - `SVDToolbox`` for performing singular value decomposition analysis on models to identify possible degeneracies and poor scaling
+        - DegeneracyHunter for identifying irreducible degenerate sets in models
+      - Model for solid-liquid separation which takes two inputs (solid and liquid streams) and produces three outlets (solids, liquid entrained with solids and pure liquid)
+      - Example of temperature swing adsorption in `models_extra`
+
+      ### Deprecation Warnings
+
+      - With the update to Pyomo 6.7.0, the plate heat exchanger model has begun failing tests on some CI platforms. If this is not addressed by the February release, this model may be removed due to failing tests. See https://github.com/IDAES/idaes-pse/issues/1294. Offers to help identify the cause and fix this issue are welcome.
+
+      ### Improvements and bug fixes
+
+      - Fixed oversight which precluded using `Mixer` and `Separator` models when inherent reactions were present in property package
+      - Added reporting methods to the `MSContactor` model
+      - Minor corrections in some examples where values were being fixed outside of declared variable bounds
+
+  2.3.0rc0:
+    next_dev_version_tag: 2.4.0dev0
+    highlights_text: |
+      ### New Features and Models
+
+      - New diagnostics toolboxes and examples
+        - Tutorial for using the DiagnosticsToolbox
+        - Methods to identify potential evaluation errors in models
+        - `SVDToolbox`` for performing singular value decomposition analysis on models to identify possible degeneracies and poor scaling
+        - DegeneracyHunter for identifying irreducible degenerate sets in models
+      - Model for solid-liquid separation which takes two inputs (solid and liquid streams) and produces three outlets (solids, liquid entrained with solids and pure liquid)
+      - Example of temperature swing adsorption in `models_extra`
+
+      ### Deprecation Warnings
+
+      - With the update to Pyomo 6.7.0, the plate heat exchanger model has begun failing tests on some CI platforms. If this is not addressed by the February release, this model may be removed due to failing tests. See https://github.com/IDAES/idaes-pse/issues/1294. Offers to help identify the cause and fix this issue are welcome.
+
+      ### Improvements and bug fixes
+
+      - Fixed oversight which precluded using `Mixer` and `Separator` models when inherent reactions were present in property package
+      - Added reporting methods to the `MSContactor` model
+      - Minor corrections in some examples where values were being fixed outside of declared variable bounds
+
+  '2.2.0':
+    highlights_text: |
+      ### New Features: DiagnosticsToolbox
+
+      DiagnosticsToolbox (`idaes.core.util.model_diagnostics.DiagnosticsToolbox` is a new self-guiding toolbox for assisting with diagnosing modeling issues. The toolbox contains a wide range of tools for identifying common modeling issues and conveying these to the user, and more features will be added in the coming months.
+      
+      To try the new toolbox, use the following steps:
+
+      - `from idaes.core.util import DiagnosticsToolbox`
+      - Build an instance of your model
+      - Ensure your models has zero degrees of freedom (as best you can)
+      - `dt = DiagnostisticsToobox(model)`
+      - `dt.report_strucutral_issues()`
+      - Follow the prompts
+
+      ### Deprecations
+
+      - DegeneracyHunter is being deprecated in favor of the new DiagnosticsToolbox. The features and capabilities of DegeneracyHunter will be moved over to the DiagnositcsToolbox in the coming months.
+      - Removal of usage of Pyomo's `expr.current` due to deprecation upstream.
+      - Removed support for radial basis functions in ALAMOpy as these did not work in the current implementation. Those wishing to use radial basis functions should use Pysmo instead.
+
+      ### New Capabilities
+
+      - MSContactor model for unit operations involving mass transfer between 2 or more streams, such as membrane, solvent extraction and solids leaching operations.
+
+      ### Other Improvements
+
+      - Improved formulation for solubility products with additional parameters for better scaling of terms
+      - Better backward compatibility, verification and robustness testing of core models and APIs
+      - Added support for Separator models without energy balances
+
+  '2.2.0rc2':
+    pyomo_version: '6.6.2'
+    refs_to_cherrypick:
+      # 2 commits by @dangunter on 2023-09-16
+      # 8d86... is just a merge commit, so we should be able to leave it out
+      # - 8d86fb87abe474576cfd45eb2bbc5bf28985f71d
+      - 61a0a9b2fd0a7cce8e8740ff993cdc2bd7e7aa22
+
+      # #1269
+      - f7a5201125e2817587da9238ae7736065d6b9b1a
+
+    highlights_text: |
+      ### New Features: DiagnosticsToolbox
+
+      DiagnosticsToolbox (`idaes.core.util.model_diagnostics.DiagnosticsToolbox` is a new self-guiding toolbox for assisting with diagnosing modeling issues. The toolbox contains a wide range of tools for identifying common modeling issues and conveying these to the user, and more features will be added in the coming months.
+      
+      To try the new toolbox, use the following steps:
+
+      - `from idaes.core.util import DiagnosticsToolbox`
+      - Build an instance of your model
+      - Ensure your models has zero degrees of freedom (as best you can)
+      - `dt = DiagnostisticsToobox(model)`
+      - `dt.report_strucutral_issues()`
+      - Follow the prompts
+
+      ### Deprecations
+
+      - DegeneracyHunter is being deprecated in favor of the new DiagnosticsToolbox. The features and capabilities of DegeneracyHunter will be moved over to the DiagnositcsToolbox in the coming months.
+      - Removal of usage of Pyomo's `expr.current` due to deprecation upstream.
+      - Removed support for radial basis functions in ALAMOpy as these did not work in the current implementation. Those wishing to use radial basis functions should use Pysmo instead.
+
+      ### New Capabilities
+
+      - MSContactor model for unit operations involving mass transfer between 2 or more streams, such as membrane, solvent extraction and solids leaching operations.
+
+      ### Other Improvements
+
+      - Improved formulation for solubility products with additional parameters for better scaling of terms
+      - Better backward compatibility, verification and robustness testing of core models and APIs
+      - Added support for Separator models without energy balances
+
+  '2.2.0rc1':
+    pyomo_version: '6.6.2'
+    refs_to_cherrypick:
+      # #1264
+      - 02c20ac2108aa5d149cb10d7bbc0f58bedfe22c4
+
+      # #1267
+      - ab29c818bba317f9f69ab0d326872d838a97a6ae
+    highlights_text: |
+      ### New Features: DiagnosticsToolbox
+
+      DiagnosticsToolbox (`idaes.core.util.model_diagnostics.DiagnosticsToolbox` is a new self-guiding toolbox for assisting with diagnosing modeling issues. The toolbox contains a wide range of tools for identifying common modeling issues and conveying these to the user, and more features will be added in the coming months.
+      
+      To try the new toolbox, use the following steps:
+
+      - `from idaes.core.util import DiagnosticsToolbox`
+      - Build an instance of your model
+      - Ensure your models has zero degrees of freedom (as best you can)
+      - `dt = DiagnostisticsToobox(model)`
+      - `dt.report_strucutral_issues()`
+      - Follow the prompts
+
+      ### Deprecations
+
+      - DegeneracyHunter is being deprecated in favor of the new DiagnosticsToolbox. The features and capabilities of DegeneracyHunter will be moved over to the DiagnositcsToolbox in the coming months.
+      - Removal of usage of Pyomo's `expr.current` due to deprecation upstream.
+      - Removed support for radial basis functions in ALAMOpy as these did not work in the current implementation. Those wishing to use radial basis functions should use Pysmo instead.
+
+      ### New Capabilities
+
+      - MSContactor model for unit operations involving mass transfer between 2 or more streams, such as membrane, solvent extraction and solids leaching operations.
+
+      ### Other Improvements
+
+      - Improved formulation for solubility products with additional parameters for better scaling of terms
+      - Better backward compatibility, verification and robustness testing of core models and APIs
+      - Added support for Separator models without energy balances
+  '2.2.0rc0':
+    pyomo_version: '6.6.2'
+    next_dev_version_tag: '2.3.0dev0'
+    highlights_text: |
+      ### New Features: DiagnosticsToolbox
+
+      DiagnosticsToolbox (`idaes.core.util.model_diagnostics.DiagnosticsToolbox` is a new self-guiding toolbox for assisting with diagnosing modeling issues. The toolbox contains a wide range of tools for identifying common modeling issues and conveying these to the user, and more features will be added in the coming months.
+      
+      To try the new toolbox, use the following steps:
+
+      - `from idaes.core.util import DiagnosticsToolbox`
+      - Build an instance of your model
+      - Ensure your models has zero degrees of freedom (as best you can)
+      - `dt = DiagnostisticsToobox(model)`
+      - `dt.report_strucutral_issues()`
+      - Follow the prompts
+
+      ### Deprecations
+
+      - DegeneracyHunter is being deprecated in favor of the new DiagnosticsToolbox. The features and capabilities of DegeneracyHunter will be moved over to the DiagnositcsToolbox in the coming months.
+      - Removal of usage of Pyomo's `expr.current` due to deprecation upstream.
+      - Removed support for radial basis functions in ALAMOpy as these did not work in the current implementation. Those wishing to use radial basis functions should use Pysmo instead.
+
+      ### New Capabilities
+
+      - MSContactor model for unit operations involving mass transfer between 2 or more streams, such as membrane, solvent extraction and solids leaching operations.
+
+      ### Other Improvements
+
+      - Improved formulation for solubility products with additional parameters for better scaling of terms
+      - Better backward compatibility, verification and robustness testing of core models and APIs
+      - Added support for Separator models without energy balances
+  '2.1.0':
+    pyomo_version: '6.6.1'
+    highlights_text: |
+      ### New IDAES Examples Repository
+
+      Starting with this release, the IDAES examples are developed in the new [IDAES/examples](https://github.com/IDAES/examples) repository.
+      
+      Along with many content and usability improvements, the most significant changes are:
+
+      - To install the examples, after installing IDAES, run `pip install idaes-examples`
+        - The `idaes get-examples` command, previously used for this, has been removed
+      - The HTML version is now available at https://idaes-examples.readthedocs.io
+        - The previous URL, https://idaes.github.io/examples, will not be updated and may be removed at some point in the future
+
+      For more details, refer to the resources available at [IDAES/examples](https://github.com/IDAES/examples).
+
+      ### Removal of Non-Functional Apps
+
+      A review of the code in the idaes/apps and idaes/models_extra folders was undertaken, and a number of tools were identified as being outdated or non-functional and no longer supported by their development teams. Due to this, the following tools have been removed:
+      
+          idaes/apps/alamopy_depr      (note that the new ALAMOpy interface remains avaialble in idaes/core/surrogates)
+          idaes/apps/helmet
+          idaes/apps/ripe
+          idaes/apps/roundingRegression
+          idaes/models_extra/carbon_capture
+
+      ### Pyomo 6.6
+
+      This version of IDAES is the first requiring Pyomo 6.6. This version of Pyomo contains multiple internal improvements and refactorings.
+      While for the majority of cases this should have positive or no impact on solvability of IDAES models, we are aware of a small number of models that have been affected as a result of these changes.
+
+      For more information, refer to the [Pyomo 6.6.1 release notes](https://github.com/Pyomo/pyomo/releases/tag/6.6.1).
+
+      ### Other highlights
+
+      - Model Initialization
+          - A prototype API for a new approach to initializing IDAES models is now available which makes available some new techniques for initializing models.  This is documented in the [Initializing Models Reference Guide](https://idaes-pse.readthedocs.io/en/2.1.0rc0/reference_guides/initialization/index.html)
+      - Modular Properties Framework
+          - Support for some transport properties
+      - Helmholtz Equation of State properties
+          - Better error checking for case where unit models are set to include phase equilibrium but the property package is set to support only a single phase
+      - Multi-Stream Contactor model: a new base model for systems involving contacting of two or more streams with mass transfer. This model is intended to be used as the foundation for models such as membrane separators, solvent extraction and other similar processes.  This is documented in the [Multi-Stream Contactor Reference Guide](https://idaes-pse.readthedocs.io/en/2.1.0rc0/reference_guides/model_libraries/generic/unit_models/mscontactor.html)
+      - `idaes/models_extra/power_generation`
+        - `report()` methods for unit models using Helmholtz equation of state
+      - General Code Maintenance
+          - Streamlining of dependencies and creation of new optional dependency groupings to support non-core tools
+          - General linting of codebase to ensure compliance with most pylint checks
+          - Spell checking of all code and doc strings
+          - Removal of backward compatibility code for Python 2
+
+  '2.1.0rc2':
+    pyomo_version: '6.6.1'
+    refs_to_cherrypick:
+    # #1219
+    - 8cb5ed03abaaaf0936f56aeada3aa2bf54ae748f
+    # #1204
+    - d96f560836a4fac3e4eba82ad69e388cfca3f655
+
+    highlights_text: |
+      ### New IDAES Examples Repository
+
+      Starting with this release, the IDAES examples are developed in the new [IDAES/examples](https://github.com/IDAES/examples) repository.
+      
+      Along with many content and usability improvements, the most significant changes are:
+
+      - To install the examples, after installing IDAES, run `pip install idaes-examples`
+        - The `idaes get-examples` command, previously used for this, has been removed
+      - The HTML version is now available at https://idaes-examples.readthedocs.io
+        - The previous URL, https://idaes.github.io/examples, will not be updated and may be removed at some point in the future
+
+      For more details, refer to the resources available at [IDAES/examples](https://github.com/IDAES/examples).
+
+      ### Removal of Non-Functional Apps
+
+      A review of the code in the idaes/apps and idaes/models_extra folders was undertaken, and a number of tools were identified as being outdated or non-functional and no longer supported by their development teams. Due to this, the following tools have been removed:
+      
+          idaes/apps/alamopy_depr      (note that the new ALAMOpy interface remains avaialble in idaes/core/surrogates)
+          idaes/apps/helmet
+          idaes/apps/ripe
+          idaes/apps/roundingRegression
+          idaes/models_extra/carbon_capture
+
+      ### Pyomo 6.6
+
+      This version of IDAES is the first requiring Pyomo 6.6. This version of Pyomo contains multiple internal improvements and refactorings.
+      While for the majority of cases this should have positive or no impact on solvability of IDAES models, we are aware of a small number of models that have been affected as a result of these changes.
+
+      For more information, refer to the [Pyomo 6.6.1 release notes](https://github.com/Pyomo/pyomo/releases/tag/6.6.1).
+
+      ### Other highlights
+
+      - Model Initialization
+          - A prototype API for a new approach to initializing IDAES models is now available which makes available some new techniques for initializing models.  This is documented in the [Initializing Models Reference Guide](https://idaes-pse.readthedocs.io/en/2.1.0rc0/reference_guides/initialization/index.html)
+      - Modular Properties Framework
+          - Support for some transport properties
+      - Helmholtz Equation of State properties
+          - Better error checking for case where unit models are set to include phase equilibrium but the property package is set to support only a single phase
+      - Multi-Stream Contactor model: a new base model for systems involving contacting of two or more streams with mass transfer. This model is intended to be used as the foundation for models such as membrane separators, solvent extraction and other similar processes.  This is documented in the [Multi-Stream Contactor Reference Guide](https://idaes-pse.readthedocs.io/en/2.1.0rc0/reference_guides/model_libraries/generic/unit_models/mscontactor.html)
+      - `idaes/models_extra/power_generation`
+        - `report()` methods for unit models using Helmholtz equation of state
+      - General Code Maintenance
+          - Streamlining of dependencies and creation of new optional dependency groupings to support non-core tools
+          - General linting of codebase to ensure compliance with most pylint checks
+          - Spell checking of all code and doc strings
+          - Removal of backward compatibility code for Python 2
+
+  '2.1.0rc1':
+    pyomo_version: '6.6.1'
+    refs_to_cherrypick:
+      # #1209
+      - 601319d7e973e02e3a941b3fc857cc52ebcf253b
+    highlights_text: |
+      ### New IDAES Examples Repository
+
+      Starting with this release, the IDAES examples are developed in the new [IDAES/examples](https://github.com/IDAES/examples) repository.
+      
+      Along with many content and usability improvements, the most significant changes are:
+
+      - To install the examples, after installing IDAES, run `pip install idaes-examples`
+        - The `idaes get-examples` command, previously used for this, has been removed
+      - The HTML version is now available at https://idaes-examples.readthedocs.io
+        - The previous URL, https://idaes.github.io/examples, will not be updated and may be removed at some point in the future
+
+      For more details, refer to the resources available at [IDAES/examples](https://github.com/IDAES/examples).
+
+      ### Removal of Non-Functional Apps
+
+      A review of the code in the idaes/apps and idaes/models_extra folders was undertaken, and a number of tools were identified as being outdated or non-functional and no longer supported by their development teams. Due to this, the following tools have been removed:
+      
+          idaes/apps/alamopy_depr      (note that the new ALAMOpy interface remains avaialble in idaes/core/surrogates)
+          idaes/apps/helmet
+          idaes/apps/ripe
+          idaes/apps/roundingRegression
+          idaes/models_extra/carbon_capture
+
+      ### Pyomo 6.6
+
+      This version of IDAES is the first requiring Pyomo 6.6. This version of Pyomo contains multiple internal improvements and refactorings.
+      While for the majority of cases this should have positive or no impact on solvability of IDAES models, we are aware of a small number of models that have been affected as a result of these changes.
+
+      For more information, refer to the [Pyomo 6.6.1 release notes](https://github.com/Pyomo/pyomo/releases/tag/6.6.1).
+
+      ### Other highlights
+
+      - Model Initialization
+          - A prototype API for a new approach to initializing IDAES models is now available which makes available some new techniques for initializing models.  This is documented in the [Initializing Models Reference Guide](https://idaes-pse.readthedocs.io/en/2.1.0rc0/reference_guides/initialization/index.html)
+      - Modular Properties Framework
+          - Support for some transport properties
+      - Helmholtz Equation of State properties
+          - Better error checking for case where unit models are set to include phase equilibrium but the property package is set to support only a single phase
+      - Multi-Stream Contactor model: a new base model for systems involving contacting of two or more streams with mass transfer. This model is intended to be used as the foundation for models such as membrane separators, solvent extraction and other similar processes.  This is documented in the [Multi-Stream Contactor Reference Guide](https://idaes-pse.readthedocs.io/en/2.1.0rc0/reference_guides/model_libraries/generic/unit_models/mscontactor.html)
+      - `idaes/models_extra/power_generation`
+        - `report()` methods for unit models using Helmholtz equation of state
+      - General Code Maintenance
+          - Streamlining of dependencies and creation of new optional dependency groupings to support non-core tools
+          - General linting of codebase to ensure compliance with most pylint checks
+          - Spell checking of all code and doc strings
+          - Removal of backward compatibility code for Python 2
+
+
+  '2.1.0rc0':
+    pyomo_version: '6.6.1'
+    next_dev_version_tag: '2.2.0dev0'
+  '2.0.0': 
+    pyomo_version: '6.5.0'
+    highlights_text: |
+      - Removal of deprecated features from IDAES v1
+      - Update to Pyomo v6.5 – this required a number of updates to support the new NL solver writer and to address some changes in Pyomo
+      - Creation of new testing suite for backward compatibility, model robustness and verification
+      - More general implementation of the Helmholtz EoS. This brings some new features like standard property diagrams, choice of mass or mole basis, and new state variable options
+      - Standardizing names in Heat Exchanger models (breaking change from v2.0.0a2):
+        - Control Volumes named `hot_side` and `cold_side`
+        - Ports names `hot_side_inlet`, `hot_side_outlet`, `cold_side_inlet` and `cold_side_outlet`
+        - Config Blocks names `hot_side_config` and `cold_side_config`
+        - Config arguments for user provided names for each side: `hot_side_name` and `cold_side_name`.
+      - Updating Keras surrogate tool to use v1.1 of OMLT
+      - New prototype API for model initialization (`idaes.core.initialization`)
+        - The new API uses "Model Initializer" objects instead of class methods, allowing for the definition of multiple initialization routines for a single model
+        - A number of common, model agnostic initialization routines have also been defined, including initialization from data, block-decomposition and a general hierarchical approach equivalent to the existing method for common unit models
+      - New metadata for thermophysical properties – `valid_range`
+        - This can be used to record the range of values over which a property value can be trusted, such as the range of experimental data used to regress parameters
+        - A number of new utility functions have been added to check for properties with values outside the valid range and to set bounds based on this metadata
+      - Updated construction of balance expressions in Control Volumes to remove unneeded terms
+        - In the past, unneeded terms were added as a constant 0 term, however they will now be dropped entirely from the expression
+        - This was necessary due to more strict unit checking in the new Pyomo solver writer which no longer ignores 0 terms
+      - Updates to metadata for thermophysical properties to better define known properties and units of measurement
+        - This results in more strict enforcement of standard naming for thermophysical and reaction properties
+        - Users can still define custom properties, but these must be done explicitly using the `define_custom_properties()` method instead of being implicitly created by `add_property()`
+      - Updated convergence tester utility tool to support definition of benchmark files (JSON format) and comparison of performance to benchmarks
+      - Set default iteration limit for IPOPT in IDAES config to 200 iterations
+      - Update scaling of example models to work with new Pyomo NL solver writer
+      - Improve testing of extensions and examples infrastructure to avoid need for downloading files
+      - Updated distillation column to centralize common functionality and remove a number of Pyomo warnings
+
+  2.0.0rc1:
+    pyomo_version: '6.5.0'
+    refs_to_cherrypick:
+      # #1107
+      - 790cb41
+
+      # #1114
+      - f777c0e
+
+    highlights_text: |
+      - Removal of deprecated features from IDAES v1
+      - Update to Pyomo v6.5 – this required a number of updates to support the new NL solver writer and to address some changes in Pyomo
+      - Creation of new testing suite for backward compatibility, model robustness and verification
+      - More general implementation of the Helmholtz EoS. This brings some new features like standard property diagrams, choice of mass or mole basis, and new state variable options
+      - Standardizing names in Heat Exchanger models (breaking change from v2.0.0a2):
+        - Control Volumes named `hot_side` and `cold_side`
+        - Ports names `hot_side_inlet`, `hot_side_outlet`, `cold_side_inlet` and `cold_side_outlet`
+        - Config Blocks names `hot_side_config` and `cold_side_config`
+        - Config arguments for user provided names for each side: `hot_side_name` and `cold_side_name`.
+      - Updating Keras surrogate tool to use v1.1 of OMLT
+      - New prototype API for model initialization (`idaes.core.initialization`)
+        - The new API uses "Model Initializer" objects instead of class methods, allowing for the definition of multiple initialization routines for a single model
+        - A number of common, model agnostic initialization routines have also been defined, including initialization from data, block-decomposition and a general hierarchical approach equivalent to the existing method for common unit models
+      - New metadata for thermophysical properties – `valid_range`
+        - This can be used to record the range of values over which a property value can be trusted, such as the range of experimental data used to regress parameters
+        - A number of new utility functions have been added to check for properties with values outside the valid range and to set bounds based on this metadata
+      - Updated construction of balance expressions in Control Volumes to remove unneeded terms
+        - In the past, unneeded terms were added as a constant 0 term, however they will now be dropped entirely from the expression
+        - This was necessary due to more strict unit checking in the new Pyomo solver writer which no longer ignores 0 terms
+      - Updates to metadata for thermophysical properties to better define known properties and units of measurement
+        - This results in more strict enforcement of standard naming for thermophysical and reaction properties
+        - Users can still define custom properties, but these must be done explicitly using the `define_custom_properties()` method instead of being implicitly created by `add_property()`
+      - Updated convergence tester utility tool to support definition of benchmark files (JSON format) and comparison of performance to benchmarks
+      - Set default iteration limit for IPOPT in IDAES config to 200 iterations
+      - Update scaling of example models to work with new Pyomo NL solver writer
+      - Improve testing of extensions and examples infrastructure to avoid need for downloading files
+      - Updated distillation column to centralize common functionality and remove a number of Pyomo warnings
+
+  2.0.0rc0:
+    pyomo_version: '6.5.0'
+  "1.13.2":
+    pyomo_version: '6.3.0'
+  2.0.0b2:
+    pyomo_version: '6.4.3'
+    refs_to_cherrypick:
+      - 9de9736  # #1040
+      - 7d1117c  # #1039
+      - df4d8d7  # #1042
+    highlights_text: |
+      ### IDAES v2 migration support
+
+      To help migrate their code to IDAES v2, the following support material is available:
+
+      - [How to migrate custom IDAES code from v1 to v2](https://github.com/IDAES/idaes-pse/wiki/idaes-v2-migrate)
+      - [IDAES v1 compatibility mode](https://github.com/IDAES/idaes-pse/wiki/idaes-v1-compat)
+
+      ### IDAES v2 changes and deprecations
+
+      - As a consequence of the standardization of the `HeatExchanger` API, support for old methods and attributes (i.e. `side_1`, `inlet_1`, `outlet_1` etc) has been removed
+        - Refer to the "IDAES v2 migration support" for more information
+      - Numerous instances where deprecated APIs were being used internally in IDAES, causing deprecation warnings to be emitted, have been removed
+      - Old process costing code has been fully deprecated and removed in favor of the new API
+
+      ### New features
+      
+      - Improved support for defining new components for use in Helmholtz equations of state
+      - Standardized naming in heat exchanger models
+      - Documentation of process costing tools and examples
+      - Implementation of an IDEAS Performance Testing Suite, which has been used to establish baseline performance metrics
+      - Improved metadata structure for defining Units of Measurement in property packages and updated all code to use the new format
+
+      ### Supported Python versions
+
+      - Support for Python 3.11 is planned for the upcoming February release
+      - Following the [NumPy NEP29 schedule](https://numpy.org/neps/nep-0029-deprecation_policy.html#drop-schedule), the February release of IDAES will also be the last to support Python 3.8
+  2.0.0b1:
+    pyomo_version: '6.4.3'
+    highlights_text: |
+      ### IDAES v2 migration support
+
+      To help migrate their code to IDAES v2, the following support material is available:
+
+      - [How to migrate custom IDAES code from v1 to v2](https://github.com/IDAES/idaes-pse/wiki/idaes-v2-migrate)
+      - [IDAES v1 compatibility mode](https://github.com/IDAES/idaes-pse/wiki/idaes-v1-compat)
+
+      ### IDAES v2 changes and deprecations
+
+      - As a consequence of the standardization of the `HeatExchanger` API, support for old methods and attributes (i.e. `side_1`, `inlet_1`, `outlet_1` etc) has been removed
+        - Refer to the "IDAES v2 migration support" for more information
+      - Numerous instances where deprecated APIs were being used internally in IDAES, causing deprecation warnings to be emitted, have been removed
+      - Old process costing code has been fully deprecated and removed in favor of the new API
+
+      ### New features
+      
+      - Improved support for defining new components for use in Helmholtz equations of state
+      - Standardized naming in heat exchanger models
+      - Documentation of process costing tools and examples
+      - Implementation of an IDEAS Performance Testing Suite, which has been used to establish baseline performance metrics
+      - Improved metadata structure for defining Units of Measurement in property packages and updated all code to use the new format
+
+      ### Supported Python versions
+
+      - Support for Python 3.11 is planned for the upcoming February release.
+      - Following the [NumPy NEP29 schedule](https://numpy.org/neps/nep-0029-deprecation_policy.html#drop-schedule), the February release of IDAES will also be the last to support Python 3.8.
+  2.0.0b0:
+    pyomo_version: '6.4.3'
+    highlights_text: |
+      ### IDAES v2 migration support
+
+      To help migrate their code to IDAES v2, the following support material is available:
+
+      - [How to migrate custom IDAES code from v1 to v2](https://github.com/IDAES/idaes-pse/wiki/idaes-v2-migrate)
+      - [IDAES v1 compatibility mode](https://github.com/IDAES/idaes-pse/wiki/idaes-v1-compat)
+
+      ### IDAES v2 changes and deprecations
+
+      - As a consequence of the standardization of the `HeatExchanger` API, support for old methods and attributes (i.e. `side_1`, `inlet_1`, `outlet_1` etc) has been removed
+        - Refer to the "IDAES v2 migration support" for more information
+      - Numerous instances where deprecated APIs were being used internally in IDAES, causing deprecation warnings to be emitted, have been removed
+      - Old process costing code has been fully deprecated and removed in favor of the new API
+
+      ### New features
+      
+      - Improved support for defining new components for use in Helmholtz equations of state
+      - Standardized naming in heat exchanger models
+      - Documentation of process costing tools and examples
+      - Implementation of an IDEAS Performance Testing Suite, which has been used to establish baseline performance metrics
+      - Improved metadata structure for defining Units of Measurement in property packages and updated all code to use the new format
+
+      ### Supported Python version
+
+      - Support for Python 3.11 is planned for the upcoming February release.
+      - Following the [NumPy NEP29 schedule](https://numpy.org/neps/nep-0029-deprecation_policy.html#drop-schedule), the February release of IDAES will also be the last to support Python 3.8.
+
+  2.0.0a3:
+    pyomo_version: '6.4.2'
+    highlights_text: |
+      ### IDAES v2 Changes and Deprecations
+
+      - When instantiating a `ProcessBlock`, options can now be passed directly as keyword arguments (kwargs)
+        instead of having to be provided as a separate dictionary through the `default=` kwargs
+  2.0.0a2:
+    pyomo_version: '6.4.1'
+    highlights_text: |
+      ### Deprecations and Moved Files:
+
+      - In preparation for the upcoming IDAES v2.0 release, the IDAES repository has been significantly reorganized to better group content and reduce the number of top-level directories
+        - In order to facilitate a smooth transition, the existing folder structure will remain in place until the v2.0 release in November with redirection links to the new location of most modules
+        - Importing a module from its old location will be redirected to the new location and a deprecation warning logger with a pointer to the new location
+      - A new API has been implemented for costing of process equipment in IDAES
+        - The old costing methods will continue to be supported with deprecation warnings until the v2.0 release in November after which they will be removed
+        - Users of these tools should begin converting their code to use the new costing APIs
+
+      ### General
+
+      - Added `reporting_units` option to the IDAES configuration dictionary to allow users to specify specific output units for quantities
+        - e.g. `report_units={“pressure”: pyo.units.bar}`
+        - All IDAES reporting functions will convert quantities to thee units defined in this dictionary
+      - Added units of measurement to IDAES stream tables and reporting functions
+      - Unit model for carbon capture using MEA solvent, including detailed correlations for heat and mass transfer with enhancement factor
+      - Added support for units of measurement and scaling tools to the gas_solid_contactor model library
+      - Addition of a new lumped capacitance model for 0D heat exchangers which includes effects of conduction through the heat exchanger walls
+      - New models for solid oxide fuel cells and solid oxide electrolysis cells
+      - New models for natural gas pipelines
+      - Added full support for PySMO tools to the new surrogate modeling API
+      - Added support for multiple inputs and output to PySMO and associated data sampling tools
+      - Improved error handling for ALAMOpy in cases where ALAMO executable encounters errors
+      - New API for implementing costing of process equipment and flows
+      - Added new supported platforms for IDAES binaries
+  2.0.0a1:
+    pyomo_version: '6.4'
+  1.13.0:
+    pyomo_version: '6.3'
+    highlights_text: |
+      ### ADVANCE CHANGE NOTICE: Upcoming IDAES v2
+
+      We are pleased to announce that IDAES v2 is under development. IDAES v2 introduces significant improvements and API changes with respect to the current (v1) codebase.
+      In order to provide advance warning of the upcoming changes and minimize their impact on functionality during this transition, the following schedule is planned for the next 9 months:
+
+      - The first stable version of IDAES v2, release 2.0.0, is currently planned for November 2022
+      - The current release series, 1.13, will be the last for the IDAES v1 codebase
+      - Over the intervening months, as part of our quarterly release cycle, we will be releasing preview versions of the v2 codebase. If applicable, we will also distribute bugfixes that are compatible with the v1 codebase as patch releases to the 1.13 release series (1.13.1, 1.13.2)
+      - During this time, changes to the IDAES API introduced by v2 will be documented as deprecation warnings in the codebase and/or as part of the release notes
+      - Once the 2.0.0 release is out, all deprecation warnings will be removed, and support will switch to IDAES v2 only
+
+      We encourage our users to follow these changes closely over the next few months and adapt their models accordingly in preparation to the 2.0.0 release.
+
+      ### Changes in IDAES v1.13:
+
+      - New modules for modular property packages which allow interfacing with CoolProp (external, open-source thermophysical property package)
+      - Added new `InitializationError` type which is now raised whenever an initialization routine fails to solve successfully. Updated all core models to raise this error on failure
+      - Initialization improvements for systems with vapor-liquid equilibrium.
+      - New solver interface which allows the use of PETSc solver library, including interface for solving (P)DAE systems
+      - Clean up of some power generation models to bring them more in-line with IDAES modeling standards
+      - Improvements in external functions for calculating roots of cubics and cubic equations of state
+      - Bug fixes in ALAMOpy wrapper to correctly support validation data sets
+
+      ### Python version support
+
+      - Support for Python 3.10 has been added
+      - Support for Python 3.6 has been removed
+  1.13.0rc0:
+    pyomo_version: '6.3'
+    next_dev_version_tag: "1.14.0dev0"
+    refs_to_cherrypick:
+      - 4e3ce355a116a356df64ba539d6bc68ce6e925a9
+      - 9964c6f61e6cedbf128243a4822c58df16855061
+      - 90f762afda2134e290b8fa1c78aa64fee9049954
+    highlights_text: |
+      ### Announcement: Upcoming IDAES 2.0
+
+      We are pleased to announce that IDAES v2.0 is currently under development and will be released in November 2022.
+      The key aspects are:
+
+      - We will continue quarterly releases of IDAES over the intervening months (v1.14 and 1.15),
+      however you will begin to see deprecation warnings for new things in IDAES v2.0 as we begin implementing changes
+      - We will maintain backwards compatibility with existing IDAES models during this time,
+      however once IDAES v2.0 is released older models will cease to function with the new code
+
+      We encourage our users to follow these changes and update their models accordingly in order to minimize the changes that need to occur once v2.0 is released.
+
+      ### Changes in IDAES v1.13:
+
+      - New modules for modular property packages which allow interfacing with CoolProp (external, open-source thermophysical property package)
+      - Added new `InitializationError` type which is now raised whenever an initialization routine fails to solve successfully. Updated all core models to raise this error on failure
+      - Initialization improvements for systems with vapor-liquid equilibrium.
+      - New solver interface which allows the use of PETSc solver library, including interface for solving (P)DAE systems
+      - Clean up of some power generation models to bring them more in-line with IDAES modeling standards
+      - Improvements in external functions for calculating roots of cubics and cubic equations of state
+      - Bug fixes in ALAMOpy wrapper to correctly support validation data sets
+
+      ### Python version support
+
+      - Support for Python 3.10 has been added
+      - Support for Python 3.6 has been removed
+
+  1.12.1:
+    refs_to_cherrypick:
+      - b1e3e9ad  # PR #662
+      - 3c3c31bb  # PR #647
+    highlights:
+      - Fixed bug in generic properties initialization (#647)
+      - Pinned IPython requirement to exclude incompatible version 8.0.0 (#611)
+  1.12.0:
+    refs_to_cherrypick:
+      - f40ab27
+    highlights_text: |
+     - Deprecations:
+        - Python 3.6 support is deprecated and it will be removed with the next IDAES release
+        - Deprecation warning: `generic_models.unit_models.distillation` folder renamed to ` generic_models.unit_models.column_models`
+        - Removed support for directly setting `state_block_class` and `reaction_block_class` in property and reaction packages
+        - Removed support for property packages which do not use Phase and Component objects
+        - Removed support for defining units of measurement via strings.
+        - Removed support for dynamic simulations without specifying units for time domain
+      - Improved workflow and interface for developing surrogate models and incorporating these into flowsheets
+      - Improved wrapper for ALAMO using new surrogate interface
+      - New Unit models:
+        - Condenser and Reboiler for packed column applications
+        - 0-D Heat Exchanger using the NTU method
+      - Ability to use external variable for `length` in 1-D control volumes
+      - Thermophysical and transport properties:
+        - New supported properties: Cp, Cv, diffusivity, thermal conductivity, speed of sound, surface tension, viscosity
+        - Improved formulation of log expressions
+      - Surrogate modeling using Keras
+        - This requires `tensorflow`, which is an optional dependency of IDAES. To install it, use any one of the following commands:
+
+          ```sh
+          conda install tensorflow
+          pip install tensorflow
+          pip install "idaes-pse[optional]"  # this will install all optional dependencies for IDAES, including tensorflow
+          ````
+  1.12.0rc1:
+    refs_to_cherrypick: []
+    highlights_text: |
+     - Deprecations:
+        - Python 3.6 support is deprecated and it will be removed with the next IDAES release
+        - Deprecation warning: `generic_models.unit_models.distillation` folder renamed to ` generic_models.unit_models.column_models`
+        - Removed support for directly setting `state_block_class` and `reaction_block_class` in property and reaction packages
+        - Removed support for property packages which do not use Phase and Component objects
+        - Removed support for defining units of measurement via strings.
+        - Removed support for dynamic simulations without specifying units for time domain
+      - Improved workflow and interface for developing surrogate models and incorporating these into flowsheets
+      - Improved wrapper for ALAMO using new surrogate interface
+      - New Unit models:
+        - Condenser and Reboiler for packed column applications
+        - 0-D Heat Exchanger using the NTU method
+      - Ability to use external variable for `length` in 1-D control volumes
+      - Thermophysical and transport properties:
+        - New supported properties: Cp, Cv, diffusivity, thermal conductivity, speed of sound, surface tension, viscosity
+        - Improved formulation of log expressions
+      - Surrogate modeling using Keras
+        - This requires `tensorflow`, which is an optional dependency of IDAES. To install it, use any one of the following commands:
+
+          ```sh
+          conda install tensorflow
+          pip install tensorflow
+          pip install "idaes-pse[optional]"  # this will install all optional dependencies for IDAES, including tensorflow
+          ````
+
+  1.12.0rc0:
+    # next_dev_version_tag: 1.13.dev0
+    refs_to_cherrypick: []
+    highlights:
+      - "**Deprecation**: Python 3.6 support is deprecated and it will be removed with the next IDAES release"
+    extra:
+      pyomo_version: '6.2'
