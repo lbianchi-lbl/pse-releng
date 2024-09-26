@@ -1,0 +1,35 @@
+name: PR (doctions)
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - data/**.yml
+
+jobs:
+  targets:
+    runs-on: ubuntu-latest
+    outputs:
+      modified: ${{ steps.files.modified }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - id: files
+        run: |
+          echo "modified=data/whatever.yml" >> "$GITHUB_OUTPUT"
+  comment:
+    name: Add comment
+    needs: [targets]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "These files have been modified: ${{ needs.targets.outputs.modified }}",
+            })
