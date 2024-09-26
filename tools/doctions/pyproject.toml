@@ -24,7 +24,8 @@ testing = [
 [project.scripts]
 doctions = "doctions.releng.cli:app"
 
-[project.entry-points."doctions-actions"]
-"github-release" = "doctions.releng.actions:CreateGithubRelease"
+[project.entry-points."doctions.actions"]
+github-release = "doctions.releng.actions:CreateGithubRelease"
 
 [tool.setuptools_scm]
+root = "../.."
