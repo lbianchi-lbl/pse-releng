@@ -10,7 +10,8 @@ import typer
 
 from doctions.models.actions import WorkflowSpec
 from doctions.releng.actions import Contexts
-from doctions.render import markdown, notebook
+from doctions.render import markdown
+# from doctions.render import notebook
 
 app = typer.Typer()
 
@@ -24,7 +25,7 @@ class Renderer(str, enum.Enum):
 
     def create(self, *args, **kwargs):
         return {
-            self.ipynb: notebook.Notebook,
+            # self.ipynb: notebook.Notebook,
             self.md: markdown.Document,
         }[self](*args, **kwargs)
 
