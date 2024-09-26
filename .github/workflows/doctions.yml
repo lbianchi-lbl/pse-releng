@@ -8,8 +8,21 @@ env:
 
 jobs:
   render:
-    name: doctions render
+    name: doctions render (${{ matrix.workflow }}/${{ matrix.context }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        workflow:
+          - release
+        context:
+          - ccsi-foqus
+          - idaes-examples
+          - idaes-pse
+          - idaes-ui
+          - pareto
+          - prommis
+          - watertap
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -19,5 +32,12 @@ jobs:
         run:
           pip install tools/doctions
       - name: Run doctions
-        run:
-          doctions --help
+        run: |
+          doctions run \
+          --renderer md \
+          --contexts "data/${{ matrix.context }}.yml" \
+          --output-path ./doctions-output \
+          "data/workflows/${{ matrix.workflow }}.yml"
+      - name: Display generated Markdown
+        run: |
+          cp ./doctions-output/workflow.md $GITHUB_STEP_SUMMARY
