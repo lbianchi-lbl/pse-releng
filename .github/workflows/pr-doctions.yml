@@ -21,6 +21,8 @@ jobs:
           echo "modified=data/whatever.yml" >> "$GITHUB_OUTPUT"
   comment:
     name: Add comment
+    permissions:
+      pull-requests: write
     needs: [targets]
     runs-on: ubuntu-latest
     steps:
