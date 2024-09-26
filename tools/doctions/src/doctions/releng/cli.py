@@ -7,7 +7,6 @@ from typing import Optional, List
 
 import oyaml as yaml
 import typer
-import watchgod
 
 from doctions.models.actions import WorkflowSpec
 from doctions.releng.actions import Contexts
@@ -82,6 +81,7 @@ def watch(
         runspec: Path,
         mkdocs_dir: Optional[Path] = None,
     ):
+    import watchgod
     _logger.info(f"Monitoring for changes in {to_monitor}")
     if mkdocs_dir:
         args = [
