@@ -106,12 +106,3 @@ def watch(
         popen.send_signal(signal.SIGQUIT)
         popen.wait(timeout=2)
         return
-
-
-if __name__ == '__main__':
-    app([
-        "examples/workflows/release.yml",
-        "--contexts", "examples/data/proteuslib.yml",
-        "--output-path", "~/lbl/reltech/docs/docs/releases/proteuslib",
-        "--overwrite",
-    ])
