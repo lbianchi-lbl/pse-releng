@@ -10,6 +10,7 @@ name = "doctions"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [
+    "packaging",
     "pydantic==1.*",
     "oyaml",
     "plum-dispatch",
