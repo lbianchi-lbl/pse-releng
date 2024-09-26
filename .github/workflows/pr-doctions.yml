@@ -12,7 +12,7 @@ jobs:
   targets:
     runs-on: ubuntu-latest
     outputs:
-      modified: ${{ steps.files.modified }}
+      modified: ${{ steps.files.outputs.modified }}
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
