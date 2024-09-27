@@ -27,6 +27,7 @@ jobs:
   comment:
     name: Add comment
     permissions:
+      contents: read
       pull-requests: write
     needs: [targets]
     runs-on: ubuntu-latest
