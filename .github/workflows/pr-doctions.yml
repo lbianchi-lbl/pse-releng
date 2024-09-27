@@ -16,6 +16,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - uses: actions/checkout@v4
       - id: files
         run: |
           relevant_files=$(gh pr view ${{ github.event.number }} --json files --jq '.files[] | select(.path|test("data/*")) | .path')
