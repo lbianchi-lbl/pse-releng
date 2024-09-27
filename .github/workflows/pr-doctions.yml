@@ -1,0 +1,59 @@
+name: PR (doctions)
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - data/**.yml
+
+jobs:
+  targets:
+    name: Determine file to render
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      contents: read
+    outputs:
+      modified: ${{ steps.files.outputs.modified }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: files
+        run: |
+          relevant_files=$(gh pr view ${{ github.event.number }} --json files --jq '.files[] | select(.path|test("data/*")) | .path')
+          echo "modified=${relevant_files}" >> "$GITHUB_OUTPUT"
+  render:
+    name: Run doctions and update PR
+    permissions:
+      contents: read
+      pull-requests: write
+    needs: [targets]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install doctions
+        run:
+          pip install tools/doctions
+      - name: Run doctions
+        run: |
+          doctions run \
+          --renderer md \
+          --contexts "${{ needs.targets.outputs.modified }}" \
+          --output-path ./doctions-output \
+          "data/workflows/release.yml"
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              body: fs.readFileSync('doctions-output/workflow.md', 'utf8'),
+            })

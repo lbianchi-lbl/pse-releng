@@ -2,6 +2,9 @@ name: doctions
 
 on:
   push:
+    paths:
+      - data/workflows/**.yml
+      - tools/doctions/**
 
 env:
   PIP_PROGRESS_BAR: "off"
