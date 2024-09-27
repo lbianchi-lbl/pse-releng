@@ -11,6 +11,8 @@ on:
 jobs:
   targets:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
     outputs:
       modified: ${{ steps.files.outputs.modified }}
     env:
