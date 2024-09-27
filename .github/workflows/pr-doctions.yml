@@ -10,6 +10,7 @@ on:
 
 jobs:
   targets:
+    name: Determine file to render
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
@@ -24,8 +25,8 @@ jobs:
         run: |
           relevant_files=$(gh pr view ${{ github.event.number }} --json files --jq '.files[] | select(.path|test("data/*")) | .path')
           echo "modified=${relevant_files}" >> "$GITHUB_OUTPUT"
-  comment:
-    name: Add comment
+  render:
+    name: Run doctions and update PR
     permissions:
       contents: read
       pull-requests: write
