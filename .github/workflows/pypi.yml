@@ -1,0 +1,208 @@
+name: Create PyPI package
+run-name: Create PyPI package (${{ format('`{}=={}`', inputs.pypi-name, inputs.release-tag) }})
+
+on:
+
+  workflow_call:
+    inputs:
+
+      repository:
+        description: Full name (user/repo) of the repository to package
+        type: string
+        required: true
+
+      release-tag:
+        description: Version tag of the release
+        type: string
+        required: true
+
+      pypi-name:
+        description: Name of the Python package distribution as it appears on PyPI
+        type: string
+        required: true
+
+      python-version:
+        description: Python version to use
+        required: false
+        default: '3.11'
+        type: string
+
+      build-command:
+        description: Command to run to generate package files
+        required: false
+        type: string
+        default: python setup.py sdist bdist_wheel
+
+      test-command:
+        description: Command(s) to run to determine successful installation
+        type: string
+        required: true
+
+      test-after-build:
+        description: Whether to run test command after build phase
+        type: boolean
+        required: false
+        default: true
+
+      pip-install-retry-wait-time:
+        description: Amount of time (in s) to wait before retrying to run pip install
+        type: string
+        required: false
+        default: "15"
+
+      build-env-name:
+        description: Name of the environment used to build package
+        type: string
+        required: false
+        default: ${{ format('build-{0}-{1}-env', inputs.pypi-name, inputs.release-tag) }}
+
+    secrets:
+
+      test-pypi-token:
+        description: Auth token for PyPI (test instance)
+        required: false
+
+      pypi-token:
+        description: Auth token for PyPI
+        required: false
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+env:
+  PYTEST_ADDOPTS: --color=yes
+  PIP_PROGRESS_BAR: 'off'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code to be packaged
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.release-tag }}
+
+      - name: Set up Conda environment with Python
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: ${{ inputs.build-env-name }}
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install (noneditable mode)
+        run: |
+          pip install --no-cache-dir .
+
+      - name: Check that the installed package has the expected tags
+        run: |
+          pip show ${{ inputs.pypi-name }} | grep "${{ inputs.release-tag }}"
+
+      - name: Run tests
+        if: ${{ inputs.test-after-build }}
+        working-directory: /tmp
+        run: |
+          ${{ inputs.test-command }}
+
+      - name: Generate dist files
+        run: ${{ inputs.build-command }}
+
+      - name: Check that the dist directory's size is below PyPI's maximum
+        run: |
+          ls -lh dist/*
+          _maxsize=100000  # 100 MB
+          _dirsize=$(du -s dist/ | cut -f 1) ; echo $_dirsize
+          [ "$_dirsize" -lt "$_maxsize" ]
+
+      - name: Upload dist files as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  upload-test-pypi:
+    if: secrets.test-pypi-token
+    needs: [build]
+    runs-on: ubuntu-latest
+    env:
+      TWINE_USERNAME: __token__
+      TWINE_NON_INTERACTIVE: "true"
+    steps:
+
+     - uses: actions/download-artifact@v4
+       with:
+         name: dist
+         path: dist
+
+     - uses: actions/setup-python@v5
+       with:
+         python-version: ${{ inputs.python-version }}
+
+     - name: Install twine
+       run: |
+         pip install twine
+
+     - name: Upload dist files to the test PyPI
+       env:
+         TWINE_PASSWORD: ${{ secrets.test-pypi-token }}
+         TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+       run: |
+         twine upload dist/*
+
+  install-test-pypi:
+    runs-on: ubuntu-latest
+    needs: [upload-test-pypi]
+
+    steps:
+
+     - uses: actions/setup-python@v5
+       with:
+         python-version: ${{ inputs.python-version }}
+
+     - name: Install ${{ inputs.pypi-name }}==${{ inputs.release-tag }} from test PyPI
+       env:
+         _wait_time_s: ${{ inputs.pip-install-retry-wait-time }}
+         _pip_install_flags: --progress-bar off --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/
+         _pip_install_target: ${{ inputs.pypi-name }}==${{ inputs.release-tag }}
+       run: |
+        until pip install $_pip_install_flags "$_pip_install_target"
+        do
+            echo "pip install failed; waiting $_wait_time_s seconds"
+            sleep "$_wait_time_s"
+        done
+
+     - name: Run tests
+       run: |
+         ${{ inputs.test-command }}
+
+  upload-pypi:
+    if: secrets.pypi-token
+    needs: [install-test-pypi]
+    runs-on: ubuntu-latest
+    env:
+      TWINE_USERNAME: __token__
+      TWINE_NON_INTERACTIVE: "true"
+    steps:
+
+     - uses: actions/download-artifact@v4
+       with:
+         name: dist
+         path: dist
+
+     - uses: actions/setup-python@v5
+       with:
+         python-version: ${{ inputs.python-version }}
+
+     - name: Install twine
+       run: |
+         pip install twine
+
+     - name: Upload dist files to the real PyPI
+       env:
+         TWINE_PASSWORD: ${{ secrets.pypi-token }}
+         TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
+       run: |
+         twine upload dist/*
+
+  # upload:
