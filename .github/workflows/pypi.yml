@@ -119,6 +119,7 @@ jobs:
           ls -lh dist/*
           _maxsize=100000  # 100 MB
           _dirsize=$(du -s dist/ | cut -f 1) ; echo $_dirsize
+          echo "::notice title='dist/ directory size'::Total size is $_dirsize kB"
           [ "$_dirsize" -lt "$_maxsize" ]
 
       - name: Upload dist files as artifact
