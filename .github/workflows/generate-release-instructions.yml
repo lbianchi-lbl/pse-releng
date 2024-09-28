@@ -1,5 +1,5 @@
 name: Generate release instructions using doctions
-run-name: Generate release instructions for `${{ inputs.target || github.issue.number }}`
+run-name: Generate release instructions for ${{ github.inputs && format('`{0}`', inputs.target) || format('#{0}', github.event.number) }}
 
 on:
   pull_request:
