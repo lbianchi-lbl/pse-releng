@@ -1,0 +1,28 @@
+name: Test doctions
+
+on:
+  push:
+    paths:
+      - data/workflows/**.yml
+      - tools/doctions/**
+
+jobs:
+  run-all:
+    name: doctions (${{ matrix.workflow }}/${{ matrix.context }})
+    uses: ./.github/workflows/doctions.yml
+    with:
+      contexts-path: data/${{ matrix.context }}.yml
+      workflow-path: data/workflows/${{ matrix.release }}.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        workflow:
+          - release
+        context:
+          - ccsi-foqus
+          - idaes-examples
+          - idaes-pse
+          - idaes-ui
+          - pareto
+          - prommis
+          - watertap

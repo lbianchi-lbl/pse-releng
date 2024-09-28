@@ -1,10 +1,26 @@
 name: doctions
 
 on:
-  push:
-    paths:
-      - data/workflows/**.yml
-      - tools/doctions/**
+  workflow_call:
+    inputs:
+      workflow-file:
+        description: Path to doctions workflow YAML file
+        default: data/workflows/release.yml
+        required: false
+        type: string
+      contexts-file:
+        description: Path to doctions contexts YAML file
+        required: true
+        type: string
+      display-step-summary:
+        description: Set to any value to have the markdown displayed as a step summary
+        required: false
+        default: ''
+        type: string
+  outputs:
+    markdown:
+      description: Rendered markdown text
+      value: ${{ jobs.render.outputs.markdown }}
 
 env:
   PIP_PROGRESS_BAR: "off"
@@ -13,19 +29,9 @@ jobs:
   render:
     name: doctions render (${{ matrix.workflow }}/${{ matrix.context }})
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        workflow:
-          - release
-        context:
-          - ccsi-foqus
-          - idaes-examples
-          - idaes-pse
-          - idaes-ui
-          - pareto
-          - prommis
-          - watertap
+    outputs:
+      markdown: ${{ steps.set-outputs.markdown }}
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -38,9 +44,14 @@ jobs:
         run: |
           doctions run \
           --renderer md \
-          --contexts "data/${{ matrix.context }}.yml" \
           --output-path ./doctions-output \
-          "data/workflows/${{ matrix.workflow }}.yml"
-      - name: Display generated Markdown
+          --contexts "${{ inputs.contexts-file }}" \
+          "${{ inputs.workflow-file }}"
+      - name: Set outputs
+        id: set-outputs
+        run: |
+          echo "markdown=$(cat ./doctions-output/workflow.md)" >> $GITHUB_OUTPUT
+      - name: Display generated Markdown as step summary
+        if: ${{ inputs.display-step-summary }}
         run: |
           cp ./doctions-output/workflow.md $GITHUB_STEP_SUMMARY
