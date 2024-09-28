@@ -1,4 +1,5 @@
 name: Generate release instructions using doctions
+run-name: Generate release instructions for `${{ inputs.target }}`
 
 on:
   workflow_dispatch:
