@@ -6,9 +6,39 @@ on:
       - data/workflows/**.yml
       - tools/doctions/**
 
+  workflow_dispatch:
+    inputs:
+      project:
+        description: Project ID used to determine which contexts file to use
+        required: false
+        type: choice
+        options:
+          - ccsi-foqus
+          - idaes-examples
+          - idaes-pse
+          - idaes-ui
+          - pareto
+          - prommis
+          - watertap
+      workflow:
+        description: Workflow ID used to determine which workflow file to use
+        required: false
+        type: choice
+        options:
+          - release
+
 jobs:
+  run-dispatch:
+    name: doctions (${{ inputs.workflow }}/${{ inputs.context }})
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    uses: ./.github/workflows/doctions.yml
+    with:
+      contexts-path: data/${{ matrix.context }}.yml
+      workflow-path: data/workflows/${{ matrix.release }}.yml
+
   run-all:
     name: doctions (${{ matrix.workflow }}/${{ matrix.context }})
+    if: ${{ github.event_name == 'push' }}
     uses: ./.github/workflows/doctions.yml
     with:
       contexts-path: data/${{ matrix.context }}.yml
