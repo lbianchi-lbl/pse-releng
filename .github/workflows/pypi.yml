@@ -58,7 +58,7 @@ on:
 
       upload:
         description: Whether to upload the build package
-        type: bool
+        type: boolean
         required: false
         default: true
 
