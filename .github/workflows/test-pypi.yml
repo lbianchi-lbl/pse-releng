@@ -45,6 +45,8 @@ jobs:
     name: Test PyPI for `${{ inputs.target }}` (no upload)
     uses: ./.github/workflows/pypi.yml
     with:
+      upload: false
+      release-tag: ${{ inputs.release-tag }}
       repository: IDAES/idaes-pse
       pypi-name: idaes-pse
       test-command: |
