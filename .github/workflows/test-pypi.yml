@@ -65,4 +65,4 @@ jobs:
       test-command: ${{ matrix.test-command }}
     secrets:
       test-pypi-token: ''
-      pypy-token: ''
+      pypi-token: ''
