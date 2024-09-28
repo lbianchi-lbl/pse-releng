@@ -30,7 +30,7 @@ jobs:
     name: doctions run (${{ inputs.workflow-file }}/${{ inputs.contexts-file }})
     runs-on: ubuntu-latest
     outputs:
-      markdown: ${{ steps.set-outputs.markdown }}
+      markdown: ${{ steps.set-outputs.outputs.markdown }}
 
     steps:
       - uses: actions/checkout@v4
