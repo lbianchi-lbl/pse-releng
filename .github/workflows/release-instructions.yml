@@ -1,4 +1,4 @@
-name: Generate release instructions using doctions
+name: Release instructions
 run-name: "Generate release instructions for ${{ github.inputs && format('`{0}`', inputs.target) || format('PR #{0}', github.event.number) }}"
 
 on:
