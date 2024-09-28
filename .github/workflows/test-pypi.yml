@@ -30,7 +30,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        target: [${{ inputs.target }}]
+        target:
+          - ${{ inputs.target }}
         include:
 
           - target: ccsi-foqus
