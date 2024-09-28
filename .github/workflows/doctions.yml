@@ -27,7 +27,7 @@ env:
 
 jobs:
   render:
-    name: doctions render (${{ matrix.workflow }}/${{ matrix.context }})
+    name: doctions run (${{ inputs.workflow-file }}/${{ inputs.contexts-file }})
     runs-on: ubuntu-latest
     outputs:
       markdown: ${{ steps.set-outputs.markdown }}
