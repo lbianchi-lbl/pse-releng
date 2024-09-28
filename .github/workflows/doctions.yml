@@ -17,10 +17,10 @@ on:
         required: false
         default: ''
         type: string
-  outputs:
-    markdown:
-      description: Rendered markdown text
-      value: ${{ jobs.render.outputs.markdown }}
+    outputs:
+      markdown:
+        description: Rendered markdown text
+        value: ${{ jobs.render.outputs.markdown }}
 
 env:
   PIP_PROGRESS_BAR: "off"
