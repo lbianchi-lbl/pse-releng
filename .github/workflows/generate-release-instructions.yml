@@ -69,7 +69,7 @@ jobs:
     needs: [doctions-pr]
     runs-on: ubuntu-latest
     permissions:
-      pull_request: write
+      pull-requests: write
     env:
       INPUT_MARKDOWN: ${{ needs.doctions-pr.outputs.markdown }}
     steps:
