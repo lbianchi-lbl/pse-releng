@@ -58,7 +58,7 @@ jobs:
     uses: ./.github/workflows/pypi.yml
     with:
       repository: ${{ matrix.repository }}
-      release-tag: ${{ matrix.release-tag }}
+      release-tag: ${{ inputs.release-tag }}
       pypi-name: ${{ matrix.pypi-name }}
       python-version: ${{ matrix.python-version }}
       build-command: ${{ matrix.build-command }}
