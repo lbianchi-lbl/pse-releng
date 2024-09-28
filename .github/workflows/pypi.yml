@@ -56,6 +56,12 @@ on:
         required: false
         default: ${{ format('build-{0}-{1}-env', inputs.pypi-name, inputs.release-tag) }}
 
+    upload:
+      description: Whether to upload the build package
+      type: bool
+      required: false
+      default: true
+
     secrets:
 
       test-pypi-token:
@@ -122,7 +128,7 @@ jobs:
           path: dist/
 
   upload-test-pypi:
-    if: secrets.test-pypi-token
+    if: inputs.upload
     needs: [build]
     runs-on: ubuntu-latest
     env:
@@ -177,7 +183,7 @@ jobs:
          ${{ inputs.test-command }}
 
   upload-pypi:
-    if: secrets.pypi-token
+    if: inputs.upload
     needs: [install-test-pypi]
     runs-on: ubuntu-latest
     env:

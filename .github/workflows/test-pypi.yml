@@ -57,12 +57,13 @@ jobs:
 
     uses: ./.github/workflows/pypi.yml
     with:
+      upload: false
       repository: ${{ matrix.repository }}
       release-tag: ${{ inputs.release-tag }}
       pypi-name: ${{ matrix.pypi-name }}
       python-version: ${{ matrix.python-version }}
       build-command: ${{ matrix.build-command }}
       test-command: ${{ matrix.test-command }}
-    secrets:
-      test-pypi-token: ''
-      pypi-token: ''
+    # secrets:
+    #   test-pypi-token: ''
+    #   pypi-token: ''
