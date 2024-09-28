@@ -59,6 +59,7 @@ jobs:
           echo "modified=${relevant_files}" >> "$GITHUB_OUTPUT"
 
   doctions-pr:
+    name: Run doctions for `${{ needs.targets.outputs.modified }}`
     needs: [targets]
     uses: ./.github/workflows/doctions.yml
     with:
@@ -66,6 +67,7 @@ jobs:
       workflow-file: data/workflows/release.yml
 
   update-pr:
+    name: 'Update PR #${{ github.event.number }}'
     needs: [doctions-pr]
     runs-on: ubuntu-latest
     permissions:
