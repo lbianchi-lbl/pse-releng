@@ -94,6 +94,7 @@ jobs:
       - name: Set up Conda environment with Python
         uses: conda-incubator/setup-miniconda@v3
         with:
+          miniforge-version: latest
           activate-environment: ${{ inputs.build-env-name }}
           python-version: ${{ inputs.python-version }}
 
