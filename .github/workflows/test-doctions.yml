@@ -33,16 +33,16 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     uses: ./.github/workflows/doctions.yml
     with:
-      contexts-path: data/${{ matrix.context }}.yml
-      workflow-path: data/workflows/${{ matrix.release }}.yml
+      contexts-file: data/${{ matrix.context }}.yml
+      workflow-file: data/workflows/${{ matrix.release }}.yml
 
   run-all:
     name: doctions (${{ matrix.workflow }}/${{ matrix.context }})
     if: ${{ github.event_name == 'push' }}
     uses: ./.github/workflows/doctions.yml
     with:
-      contexts-path: data/${{ matrix.context }}.yml
-      workflow-path: data/workflows/${{ matrix.release }}.yml
+      contexts-file: data/${{ matrix.context }}.yml
+      workflow-file: data/workflows/${{ matrix.release }}.yml
     strategy:
       fail-fast: false
       matrix:
