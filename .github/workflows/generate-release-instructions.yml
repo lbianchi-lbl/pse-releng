@@ -1,0 +1,32 @@
+name: Generate release instructions using doctions
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Choose one target determining which contexts file to use
+        required: false
+        type: choice
+        options:
+          - ccsi-foqus
+          - idaes-examples
+          - idaes-pse
+          - idaes-ui
+          - pareto
+          - prommis
+          - watertap
+      workflow:
+        description: Workflow ID used to determine which workflow file to use
+        required: false
+        type: choice
+        options:
+          - release
+
+jobs:
+  doctions:
+    name: Run doctions for `${{ inputs.target }}` with `${{ inputs.workflow }}` workflow
+    uses: ./.github/workflows/doctions.yml
+    with:
+      contexts-file: data/${{ inputs.target }}.yml
+      workflow-file: data/workflows/${{ inputs.workflow }}.yml
+      display-step-summary: 'yes'
