@@ -73,6 +73,11 @@ jobs:
     env:
       INPUT_MARKDOWN: ${{ needs.doctions-pr.outputs.markdown }}
     steps:
+      - name: Display markdown from job output
+        run: |
+          cat <<'EOF'
+          ${{ needs.doctions-pr.outputs.markdown }}
+          EOF
       - uses: actions/github-script@v7
         with:
           script: |
