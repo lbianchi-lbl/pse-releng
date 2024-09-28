@@ -13,7 +13,7 @@ on:
     inputs:
       target:
         description: Choose one target determining which contexts file to use
-        required: false
+        required: true
         type: choice
         options:
           - ccsi-foqus
@@ -26,6 +26,7 @@ on:
       workflow:
         description: Workflow ID used to determine which workflow file to use
         required: false
+        default: release
         type: choice
         options:
           - release
