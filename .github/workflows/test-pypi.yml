@@ -7,16 +7,16 @@ on:
 
       target:
         description: Target to use for PyPI workflow
-          type: choice
-          required: true
-          options:
-            - ccsi-foqus
-            - idaes-pse
-            # - idaes-examples
-            # - idaes-ui
-            # - pareto
-            # - prommis
-            # - watertap
+        type: choice
+        required: true
+        options:
+          - ccsi-foqus
+          - idaes-pse
+          # - idaes-examples
+          # - idaes-ui
+          # - pareto
+          # - prommis
+          # - watertap
 
       release-tag:
         description: Release tag to be used
