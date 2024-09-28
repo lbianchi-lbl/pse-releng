@@ -56,11 +56,11 @@ on:
         required: false
         default: ${{ format('build-{0}-{1}-env', inputs.pypi-name, inputs.release-tag) }}
 
-    upload:
-      description: Whether to upload the build package
-      type: bool
-      required: false
-      default: true
+      upload:
+        description: Whether to upload the build package
+        type: bool
+        required: false
+        default: true
 
     secrets:
 
