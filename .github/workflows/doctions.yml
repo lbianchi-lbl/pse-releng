@@ -51,7 +51,7 @@ jobs:
         id: set-outputs
         run: |
           multiline_md_text="$(cat ./doctions-output/workflow.md)"
-          echo 'markdown<<EOF' >> $GITHUB_OUTPUT
+          echo 'markdown=<<EOF' >> $GITHUB_OUTPUT
           echo $multiline_md_text >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
       - name: Display generated Markdown as step summary
