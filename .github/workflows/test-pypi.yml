@@ -27,7 +27,7 @@ jobs:
 
   test-ccsi-foqus:
     if: inputs.target == 'ccsi-foqus'
-    name: Test PyPI for `${{ inputs.target }}` (no upload)
+    name: Test PyPI for `ccsi-foqus` (no upload)
     uses: ./.github/workflows/pypi.yml
     with:
       upload: false
@@ -42,7 +42,7 @@ jobs:
 
   test-idaes-pse:
     if: inputs.target == 'idaes-pse'
-    name: Test PyPI for `${{ inputs.target }}` (no upload)
+    name: Test PyPI for `idaes-pse` (no upload)
     uses: ./.github/workflows/pypi.yml
     with:
       upload: false
