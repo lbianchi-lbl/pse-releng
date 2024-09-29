@@ -54,7 +54,7 @@ on:
         description: Name of the environment used to build package
         type: string
         required: false
-        default: ${{ format('build-{0}-{1}-env', inputs.pypi-name, inputs.release-tag) }}
+        default: ''
 
       upload:
         description: Whether to upload the build package

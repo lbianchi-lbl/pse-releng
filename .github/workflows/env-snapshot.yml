@@ -19,13 +19,13 @@ on:
         description: Installation target to use as arg for `pip install` command
         type: string
         required: false
-        default: ${{ format('{0}=={1}', inputs.pypi-name, inputs.version) }}
+        default: ''
 
       env-name:
         description: Name of the Conda environment to snapshot
         type: string
         required: false
-        default: ${{ format('{0}-{1}', inputs.pypi-name, inputs.version) }}
+        default: ''
 
       python-version:
         description: Python version to install
