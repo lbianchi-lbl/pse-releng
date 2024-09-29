@@ -96,7 +96,7 @@ jobs:
         working-directory: ${{ env.OUTPUT_DIR }}
         run: |
           conda env export \
-          -n "${{ matrix.env-name }}"
+          -n "${{ matrix.env-name }}" \
           --no-builds \
           -f "${{ matrix.environment-file }}"
 
