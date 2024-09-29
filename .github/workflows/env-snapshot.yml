@@ -62,7 +62,7 @@ jobs:
           - pip-install-target: ${{ inputs.pip-install-target || format('{0}=={1}', inputs.pypi-name, inputs.version) }}
             env-name: ${{ inputs.env-name || format('{0}-{1}', inputs.pypi-name, inputs.version) }}
             python-version: ${{ inputs.python-version }}
-            requirement-file: ${{ inputs.requirement-file }}
+            requirements-file: ${{ inputs.requirements-file }}
             environment-file: ${{ inputs.environment-file }}
 
     steps:
