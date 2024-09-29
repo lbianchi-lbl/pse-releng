@@ -1,0 +1,27 @@
+name: Test env snapshot workflow
+
+on:
+
+  workflow_dispatch:
+
+jobs:
+
+  test-all:
+    name: Test env snapshot for ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: ccsi-foqus-3.21.0
+            pypi-name: ccsi-foqus
+            version: '3.21.0'
+            python-version: '3.11'
+          - target: idaes-pse-2.5.0
+            pypi-name: idaes-pse
+            version: '2.5.0'
+            python-version: '3.10'
+    uses: ./.github/workflows/env-snapshot.yml
+    with:
+      pypi-name: ${{ matrix.pypi-name }}
+      version: ${{ matrix.version }}
+      python-version: ${{ matrix.python-version }}

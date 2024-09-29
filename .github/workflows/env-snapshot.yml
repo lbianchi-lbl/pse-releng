@@ -1,0 +1,98 @@
+name: Environment snapshot
+
+on:
+
+  workflow_call:
+    inputs:
+
+      pypi-name:
+        description: Name of the Python package distribution as it appears on PyPI
+        type: string
+        required: true
+
+      version:
+        description: Package version to install
+        type: string
+        required: true
+
+      pip-install-target:
+        description: Installation target to use as arg for `pip install` command
+        type: string
+        required: false
+        default: ${{ format('{0}=={1}', inputs.pypi-name, inputs.version) }}
+
+      env-name:
+        description: Name of the Conda environment to snapshot
+        type: string
+        required: false
+        default: ${{ format('{0}-{1}', inputs.pypi-name, inputs.version) }}
+
+      python-version:
+        description: Python version to install
+        required: false
+        default: '3.11'
+        type: string
+
+      requirements-file:
+        description: Name of the requirements file
+        type: string
+        required: false
+        default: requirements.txt
+
+      environment-file:
+        description: Name of the Conda environment file
+        type: string
+        required: false
+        default: environment.yml
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+env:
+  PIP_PROGRESS_BAR: 'off'
+
+jobs:
+  install-and-collect:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Set up Conda environment with Python
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          activate-environment: ${{ inputs.env-name }}
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install ${{ inputs.pip-install-target }}
+        run: |
+          pip install "${{ inputs.pip-install-target }}"
+
+      - name: Create output directory ${{ inputs.env-name }}
+        run: |
+          mkdir "${{ inputs.env-name }}"
+
+      - name: Save environment info (${{ inputs.requirements-file }})
+        working-directory: ${{ inputs.env-name }}
+        run: |
+          pip freeze > "${{ inputs.requirements-file }}"
+
+          cat "${{ inputs.requirements-file }}"
+
+      - name: Save environment info (${{ inputs.environment-file }})
+        working-directory: ${{ inputs.env-name }}
+        run: |
+          conda env export \
+          -n "${{ inputs.env-name }}"
+          --no-builds \
+          -f "${{ inputs.environment-file }}"
+
+          cat "${{ inputs.environment-file }}"
+
+      - name: Save as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.env-name }}
+          path: ${{ inputs.env-name }}
+          if-no-files-found: error
