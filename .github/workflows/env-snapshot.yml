@@ -56,43 +56,52 @@ jobs:
   install-and-collect:
     runs-on: ubuntu-latest
 
-    steps:
+    strategy:
+      matrix:
+        include:
+          - pip-install-target: ${{ inputs.pip-install-target || format('{0}=={1}', inputs.pypi-name, inputs.version) }}
+            env-name: ${{ inputs.env-name || format('{0}-{1}', inputs.pypi-name, inputs.version) }}
+            python-version: ${{ inputs.python-version }}
+            requirement-file: ${{ inputs.requirement-file }}
+            environment-file: ${{ inputs.environment-file }}
 
+    steps:
+      
       - name: Set up Conda environment with Python
         uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
-          activate-environment: ${{ inputs.env-name }}
-          python-version: ${{ inputs.python-version }}
+          activate-environment: ${{ matrix.env-name }}
+          python-version: ${{ matrix.python-version }}
 
-      - name: Install ${{ inputs.pip-install-target }}
+      - name: Install ${{ matrix.pip-install-target }}
         run: |
-          pip install "${{ inputs.pip-install-target }}"
+          pip install "${{ matrix.pip-install-target }}"
 
-      - name: Create output directory ${{ inputs.env-name }}
+      - name: Create output directory ${{ matrix.env-name }}
         run: |
-          mkdir "${{ inputs.env-name }}"
+          mkdir "${{ matrix.env-name }}"
 
-      - name: Save environment info (${{ inputs.requirements-file }})
-        working-directory: ${{ inputs.env-name }}
+      - name: Save environment info (${{ matrix.requirements-file }})
+        working-directory: ${{ matrix.env-name }}
         run: |
-          pip freeze > "${{ inputs.requirements-file }}"
+          pip freeze > "${{ matrix.requirements-file }}"
 
-          cat "${{ inputs.requirements-file }}"
+          cat "${{ matrix.requirements-file }}"
 
-      - name: Save environment info (${{ inputs.environment-file }})
-        working-directory: ${{ inputs.env-name }}
+      - name: Save environment info (${{ matrix.environment-file }})
+        working-directory: ${{ matrix.env-name }}
         run: |
           conda env export \
-          -n "${{ inputs.env-name }}"
+          -n "${{ matrix.env-name }}"
           --no-builds \
-          -f "${{ inputs.environment-file }}"
+          -f "${{ matrix.environment-file }}"
 
-          cat "${{ inputs.environment-file }}"
+          cat "${{ matrix.environment-file }}"
 
       - name: Save as workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.env-name }}
-          path: ${{ inputs.env-name }}
+          name: ${{ matrix.env-name }}
+          path: ${{ matrix.env-name }}
           if-no-files-found: error

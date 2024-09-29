@@ -85,6 +85,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: Set default values from inputs
+        id: set-defaults
+        run: |
+          echo "build-env-name=${{ inputs.build-env-name || format('build-{0}-{1}-env', inputs.pypi-name, inputs.release-tag) }}" >> $GITHUB_OUTPUT
+        
       - name: Checkout code to be packaged
         uses: actions/checkout@v4
         with:
@@ -95,7 +101,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
-          activate-environment: ${{ inputs.build-env-name }}
+          activate-environment: ${{ steps.set-defaults.outputs.build-env-name }}
           python-version: ${{ inputs.python-version }}
 
       - name: Install (noneditable mode)
