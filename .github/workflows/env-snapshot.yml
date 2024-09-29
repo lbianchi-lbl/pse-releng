@@ -64,6 +64,8 @@ jobs:
             python-version: ${{ inputs.python-version }}
             requirements-file: ${{ inputs.requirements-file }}
             environment-file: ${{ inputs.environment-file }}
+    env:
+      OUTPUT_DIR: ${{ matrix.env-name }}
 
     steps:
       
@@ -78,19 +80,20 @@ jobs:
         run: |
           pip install "${{ matrix.pip-install-target }}"
 
-      - name: Create output directory ${{ matrix.env-name }}
+      - name: Create output directory ${{ env.OUTPUT_DIR }}
+        id: output-dir
         run: |
-          mkdir "${{ matrix.env-name }}"
+          mkdir "$OUTPUT_DIR"
 
       - name: Save environment info (${{ matrix.requirements-file }})
-        working-directory: ${{ matrix.env-name }}
+        working-directory: ${{ env.OUTPUT_DIR }}
         run: |
           pip freeze > "${{ matrix.requirements-file }}"
 
           cat "${{ matrix.requirements-file }}"
 
       - name: Save environment info (${{ matrix.environment-file }})
-        working-directory: ${{ matrix.env-name }}
+        working-directory: ${{ env.OUTPUT_DIR }}
         run: |
           conda env export \
           -n "${{ matrix.env-name }}"
@@ -103,5 +106,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.env-name }}
-          path: ${{ matrix.env-name }}
+          path: ${{ env.OUTPUT_DIR }}
           if-no-files-found: error
