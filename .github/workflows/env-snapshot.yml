@@ -53,7 +53,8 @@ env:
   PIP_PROGRESS_BAR: 'off'
 
 jobs:
-  install-and-collect:
+  create-and-collect:
+    name: Create and collect ${{ matrix.env-name }} env
     runs-on: ubuntu-latest
 
     strategy:
