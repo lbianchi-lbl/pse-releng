@@ -98,7 +98,7 @@ jobs:
 
      - name: Generate dist files
        run: |
-         pip install build
+         pip install build wheel
 
          ${{ inputs.build-command }}
 
