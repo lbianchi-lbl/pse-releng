@@ -5,7 +5,7 @@ on:
 
   workflow_dispatch:
   push:
-    files:
+    paths:
       - .github/workflows/pypi.yml
       - .github/workflows/test-pypi.yml
 
