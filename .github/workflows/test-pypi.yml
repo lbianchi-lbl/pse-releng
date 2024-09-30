@@ -1,31 +1,9 @@
 name: Test PyPI workflow
-run-name: Test PyPI workflow (${{ inputs.target }})
+run-name: Test PyPI workflow
 
 on:
 
   workflow_dispatch:
-    inputs:
-
-      target:
-        description: Target to use for PyPI workflow
-        type: choice
-        required: false
-        options:
-          - ccsi-foqus
-          - idaes-pse
-          # - idaes-examples
-          # - idaes-ui
-          # - pareto
-          # - prommis
-          # - watertap
-        default: ''
-
-      release-tag:
-        description: Release tag to be used
-        type: string
-        required: false
-        default: ''
-
   push:
     files:
       - .github/workflows/pypi.yml
@@ -35,7 +13,6 @@ jobs:
 
   test-all:
     name: Test env snapshot for ${{ matrix.target }}
-    if: matrix.target == (inputs.target || matrix.target)
     strategy:
       fail-fast: false
       matrix:
@@ -43,7 +20,7 @@ jobs:
 
           - target: ccsi-foqus
             upload: false
-            release-tag: ${{ inputs.release-tag || '3.21.0' }}
+            release-tag: '3.21.0'
             repository: CCSI-Toolset/FOQUS
             pypi-name: ccsi-foqus
             python-version: '3.11'
@@ -55,7 +32,7 @@ jobs:
           - target: idaes-pse
             upload: false
             repository: IDAES/idaes-pse
-            release-tag: ${{ inputs.release-tag || '2.5.0' }}
+            release-tag: '2.5.0'
             pypi-name: idaes-pse
             python-version: '3.10'
             extras-require: '[ui,coolprop,grid,omlt]'
