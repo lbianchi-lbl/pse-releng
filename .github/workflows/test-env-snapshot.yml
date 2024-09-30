@@ -6,6 +6,7 @@ on:
   push:
     files:
       - .github/workflows/env-snapshot.yml
+      - .github/workflows/test-env-snapshot.yml
 
 jobs:
 
