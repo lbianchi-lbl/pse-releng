@@ -86,35 +86,35 @@ jobs:
 
     steps:
 
-      - name: Checkout code to be packaged
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.repository }}
-          ref: ${{ inputs.release-tag }}
-
-     - uses: actions/setup-python@v5
+     - name: Checkout code to be packaged
+       uses: actions/checkout@v4
        with:
-         python-version: ${{ inputs.python-version }}
+         repository: ${{ inputs.repository }}
+         ref: ${{ inputs.release-tag }}
 
-      - name: Generate dist files
-        run: |
-          pip install build
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
 
-          ${{ inputs.build-command }}
+     - name: Generate dist files
+       run: |
+         pip install build
 
-      - name: Check that the dist directory's size is below PyPI's maximum
-        run: |
-          ls -lh dist/*
-          _maxsize=100000  # 100 MB
-          _dirsize=$(du -s dist/ | cut -f 1) ; echo $_dirsize
-          echo "::notice title=dist/ directory size::Total size is $_dirsize kB"
-          [ "$_dirsize" -lt "$_maxsize" ]
+         ${{ inputs.build-command }}
 
-      - name: Upload dist files as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist/
+     - name: Check that the dist directory's size is below PyPI's maximum
+       run: |
+         ls -lh dist/*
+         _maxsize=100000  # 100 MB
+         _dirsize=$(du -s dist/ | cut -f 1) ; echo $_dirsize
+         echo "::notice title=dist/ directory size::Total size is $_dirsize kB"
+         [ "$_dirsize" -lt "$_maxsize" ]
+
+     - name: Upload dist files as artifact
+       uses: actions/upload-artifact@v4
+       with:
+         name: dist
+         path: dist/
 
   test-whl:
     needs: [build]
@@ -122,29 +122,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
+     - uses: actions/download-artifact@v4
+       with:
+         name: dist
+         path: dist
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ inputs.python-version }}
+     - uses: actions/setup-python@v5
+       with:
+         python-version: ${{ inputs.python-version }}
 
-      - name: Install from .whl file
-        run: |
-          whl_file="$(ls .*whl)"
-          pip install "${whl_file}${{ inputs.extras-require }}"
+     - name: Install from .whl file
+       run: |
+         whl_file="$(ls .*whl)"
+         pip install "${whl_file}${{ inputs.extras-require }}"
 
-      - name: Check that installed package has the expected targs
-        run: |
-          pip show ${{ inputs.pypi-name }} | grep "${{ inputs.release-tag }}"
+     - name: Check that installed package has the expected targs
+       run: |
+         pip show ${{ inputs.pypi-name }} | grep "${{ inputs.release-tag }}"
 
-      - name: Run tests
-        if: ${{ inputs.test-after-build }}
-        working-directory: /tmp
-        run: |
-          ${{ inputs.test-command }}
+     - name: Run tests
+       if: ${{ inputs.test-after-build }}
+       working-directory: /tmp
+       run: |
+         ${{ inputs.test-command }}
 
   upload-test-pypi:
     if: inputs.upload
