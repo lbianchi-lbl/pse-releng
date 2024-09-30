@@ -21,6 +21,12 @@ on:
         type: string
         required: true
 
+      extras-require:
+        description: extras_require target(s) to install, if any, including delimiting square brackets.
+        type: string
+        required: false
+        default: ''
+
       python-version:
         description: Python version to use
         required: false
@@ -31,7 +37,7 @@ on:
         description: Command to run to generate package files
         required: false
         type: string
-        default: python setup.py sdist bdist_wheel
+        default: python -m build
 
       test-command:
         description: Command(s) to run to determine successful installation
@@ -49,12 +55,6 @@ on:
         type: string
         required: false
         default: "15"
-
-      build-env-name:
-        description: Name of the environment used to build package
-        type: string
-        required: false
-        default: ''
 
       upload:
         description: Whether to upload the build package
@@ -86,40 +86,21 @@ jobs:
 
     steps:
 
-      - name: Set default values from inputs
-        id: set-defaults
-        run: |
-          echo "build-env-name=${{ inputs.build-env-name || format('build-{0}-{1}-env', inputs.pypi-name, inputs.release-tag) }}" >> $GITHUB_OUTPUT
-        
       - name: Checkout code to be packaged
         uses: actions/checkout@v4
         with:
           repository: ${{ inputs.repository }}
           ref: ${{ inputs.release-tag }}
 
-      - name: Set up Conda environment with Python
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          miniforge-version: latest
-          activate-environment: ${{ steps.set-defaults.outputs.build-env-name }}
-          python-version: ${{ inputs.python-version }}
-
-      - name: Install (noneditable mode)
-        run: |
-          pip install --no-cache-dir .
-
-      - name: Check that the installed package has the expected tags
-        run: |
-          pip show ${{ inputs.pypi-name }} | grep "${{ inputs.release-tag }}"
-
-      - name: Run tests
-        if: ${{ inputs.test-after-build }}
-        working-directory: /tmp
-        run: |
-          ${{ inputs.test-command }}
+     - uses: actions/setup-python@v5
+       with:
+         python-version: ${{ inputs.python-version }}
 
       - name: Generate dist files
-        run: ${{ inputs.build-command }}
+        run: |
+          pip install build
+
+          ${{ inputs.build-command }}
 
       - name: Check that the dist directory's size is below PyPI's maximum
         run: |
@@ -135,9 +116,39 @@ jobs:
           name: dist
           path: dist/
 
+  test-whl:
+    needs: [build]
+    name: Test ${{ inputs.pypi-name }} from .whl file
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install from .whl file
+        run: |
+          whl_file="$(ls .*whl)"
+          pip install "${whl_file}${{ inputs.extras-require }}"
+
+      - name: Check that installed package has the expected targs
+        run: |
+          pip show ${{ inputs.pypi-name }} | grep "${{ inputs.release-tag }}"
+
+      - name: Run tests
+        if: ${{ inputs.test-after-build }}
+        working-directory: /tmp
+        run: |
+          ${{ inputs.test-command }}
+
   upload-test-pypi:
     if: inputs.upload
-    needs: [build]
+    needs: [test-whl]
     runs-on: ubuntu-latest
     env:
       TWINE_USERNAME: __token__
@@ -177,8 +188,8 @@ jobs:
      - name: Install ${{ inputs.pypi-name }}==${{ inputs.release-tag }} from test PyPI
        env:
          _wait_time_s: ${{ inputs.pip-install-retry-wait-time }}
-         _pip_install_flags: --progress-bar off --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/
-         _pip_install_target: ${{ inputs.pypi-name }}==${{ inputs.release-tag }}
+         _pip_install_flags: --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/
+         _pip_install_target: ${{ inputs.pypi-name }}${{ inputs.extras-require }}==${{ inputs.release-tag }}
        run: |
         until pip install $_pip_install_flags "$_pip_install_target"
         do
@@ -187,6 +198,7 @@ jobs:
         done
 
      - name: Run tests
+      if: ${{ inputs.test-after-build }}
        run: |
          ${{ inputs.test-command }}
 
