@@ -15,6 +15,12 @@ on:
         type: string
         required: true
 
+      extras-require:
+        description: extras_require target(s) to install, if any, including delimiting square brackets.
+        type: string
+        required: false
+        default: ''
+
       pip-install-target:
         description: Installation target to use as arg for `pip install` command
         type: string
@@ -60,7 +66,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - pip-install-target: ${{ inputs.pip-install-target || format('{0}=={1}', inputs.pypi-name, inputs.version) }}
+          - pip-install-target: ${{ inputs.pip-install-target || format('{0}{1}=={2}', inputs.pypi-name, inputs.extras-require, inputs.version) }}
             env-name: ${{ inputs.env-name || format('{0}-{1}', inputs.pypi-name, inputs.version) }}
             python-version: ${{ inputs.python-version }}
             requirements-file: ${{ inputs.requirements-file }}

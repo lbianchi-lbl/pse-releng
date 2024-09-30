@@ -20,6 +20,7 @@ jobs:
             pypi-name: idaes-pse
             version: '2.5.0'
             python-version: '3.10'
+            extras-require: '[ui,coolprop,grid,omlt]'
     uses: ./.github/workflows/env-snapshot.yml
     with:
       pypi-name: ${{ matrix.pypi-name }}
