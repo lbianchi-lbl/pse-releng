@@ -134,7 +134,7 @@ jobs:
      - name: Install from .whl file
        run: |
          ls -lh dist/
-         whl_file="$(ls dist/.*whl)"
+         whl_file="$(ls dist/*.whl)"
          echo $whl_file
          pip install "${whl_file}${{ inputs.extras-require }}"
 
