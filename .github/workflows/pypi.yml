@@ -133,7 +133,9 @@ jobs:
 
      - name: Install from .whl file
        run: |
-         whl_file="$(ls .*whl)"
+         ls -lh dist/
+         whl_file="$(ls dist/.*whl)"
+         echo $whl_file
          pip install "${whl_file}${{ inputs.extras-require }}"
 
      - name: Check that installed package has the expected targs
