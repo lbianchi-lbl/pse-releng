@@ -47,6 +47,7 @@ jobs:
     uses: ./.github/workflows/pypi.yml
     with:
       upload: ${{ matrix.upload }}
+      artifact-name: ${{ format('{0}-{1}', matrix.target, matrix.release-tag) }}
       repository: ${{ matrix.repository }}
       pypi-name: ${{ matrix.pypi-name }}
       release-tag: ${{ matrix.release-tag }}
