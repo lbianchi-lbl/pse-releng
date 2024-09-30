@@ -9,7 +9,7 @@ on:
       target:
         description: Target to use for PyPI workflow
         type: choice
-        required: true
+        required: false
         options:
           - ccsi-foqus
           - idaes-pse
@@ -18,43 +18,62 @@ on:
           # - pareto
           # - prommis
           # - watertap
+          default: ''
 
       release-tag:
         description: Release tag to be used
         type: string
-        required: true
+        required: false
+        default: ''
+
+  push:
+    files:
+      - .github/workflows/pypi.yml
+      - .github/workflows/test-pypi.yml
 
 jobs:
 
-  test-ccsi-foqus:
-    if: inputs.target == 'ccsi-foqus'
-    name: Test PyPI for `ccsi-foqus` (no upload)
-    uses: ./.github/workflows/pypi.yml
-    with:
-      upload: false
-      release-tag: ${{ inputs.release-tag }}
-      repository: CCSI-Toolset/FOQUS
-      pypi-name: ccsi-foqus
-      test-command: |
-        foqus --help
-      python-version: '3.11'
-      build-command: |
-        rm -r examples/ && python setup.py sdist bdist_wheel
+  test-all:
+    name: Test env snapshot for ${{ matrix.target }}
+    if: matrix.target == (inputs.target || matrix.target)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
 
-  test-idaes-pse:
-    if: inputs.target == 'idaes-pse'
-    name: Test PyPI for `idaes-pse` (no upload)
+          - target: ccsi-foqus
+            upload: false
+            release-tag: ${{ inputs.release-tag || '3.21.0' }}
+            repository: CCSI-Toolset/FOQUS
+            pypi-name: ccsi-foqus
+            python-version: '3.11'
+            test-command: |
+              foqus --help
+            build-command: |
+              rm -r examples/ && python setup.py sdist bdist_wheel
+
+          - target: idaes-pse
+            upload: false
+            repository: IDAES/idaes-pse
+            release-tag: ${{ inputs.release-tag || '2.5.0' }}
+            pypi-name: idaes-pse
+            python-version: '3.10'
+            extras-require: '[ui,coolprop,grid,omlt]'
+            test-command: |
+              idaes get-extensions --extra petsc --verbose
+              pip install pytest
+              wget https://raw.githubusercontent.com/IDAES/idaes-pse/main/pytest.ini
+              pytest --pyargs idaes -m "unit" -x
+            build-command: |
+              python setup.py sdist bdist_wheel
+
     uses: ./.github/workflows/pypi.yml
     with:
-      upload: false
-      release-tag: ${{ inputs.release-tag }}
-      repository: IDAES/idaes-pse
-      pypi-name: idaes-pse
-      test-command: |
-        idaes get-extensions --extra petsc --verbose
-        pip install pytest
-        wget https://raw.githubusercontent.com/IDAES/idaes-pse/main/pytest.ini
-        pytest --pyargs idaes -m "unit" -x
-      python-version: '3.11'
-      build-command: |
-        python setup.py sdist bdist_wheel
+      upload: ${{ matrix.upload }}
+      repository: ${{ matrix.repository }}
+      pypi-name: ${{ matrix.pypi-name }}
+      release-tag: ${{ matrix.release-tag }}
+      python-version: ${{ matrix.python-version }}
+      build-command: ${{ matrix.build-command }}
+      extras-require: ${{ matrix.extras-require }}
+      test-command: ${{ matrix.test-command }}
