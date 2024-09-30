@@ -3,6 +3,9 @@ name: Test env snapshot workflow
 on:
 
   workflow_dispatch:
+  push:
+    files:
+      - .github/workflows/env-snapshot.yml
 
 jobs:
 
