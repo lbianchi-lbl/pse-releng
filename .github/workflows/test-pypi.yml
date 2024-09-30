@@ -12,7 +12,7 @@ on:
 jobs:
 
   test-all:
-    name: Test env snapshot for ${{ matrix.target }}
+    name: Test PyPI workflow for ${{ matrix.target }}
     strategy:
       fail-fast: false
       matrix:
