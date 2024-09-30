@@ -198,7 +198,7 @@ jobs:
         done
 
      - name: Run tests
-      if: ${{ inputs.test-after-build }}
+       if: ${{ inputs.test-after-build }}
        run: |
          ${{ inputs.test-command }}
 
