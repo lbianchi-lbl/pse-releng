@@ -45,7 +45,7 @@ jobs:
   env-snapshot:
     name: Create env snapshot for idaes-pse ${{ inputs.tag }}
     if: inputs.phase == 'env-snapshot'
-    uses: /.github/workflows/env-snapshot.yml
+    uses: ./.github/workflows/env-snapshot.yml
     with:
       pypi-name: idaes-pse
       version: ${{ inputs.tag }}
