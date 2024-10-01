@@ -26,7 +26,7 @@ jobs:
     uses: ./.github/workflows/pypi.yml
     with:
       upload: true
-      repository: IDAES/idaes-examples
+      repository: IDAES/examples
       release-tag: ${{ inputs.tag }}
       pypi-name: idaes-examples
       python-version: '3.11'
