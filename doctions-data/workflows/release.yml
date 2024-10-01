@@ -442,12 +442,9 @@ jobs:
 
   environment-info:
     if: ${{ project.id in ["idaes", "idaes-examples"] }}
-    name: Collect environment info for the release using workflow
+    name: Collect environment info for the release from env-snapshot workflow
     steps:
-      - name: Trigger workflow and wait until it finishes
-        run: |
-          gh workflow run -R lbianchi-lbl/pse-releng release-${{ project.python.name }}.yml -F phase=env-snapshot -F tag=${{ release.tag }}
-      - name: Download artifact and upload as release artifact
+      - name: Download workflow artifact and upload as release artifact
         run: |
           # bash/zsh
           pushd "$(mktemp -d)"
