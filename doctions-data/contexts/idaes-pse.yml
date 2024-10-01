@@ -56,7 +56,6 @@ releases:
       ### Deprecations and Removals
       - Python 3.8 is no longer supported. The supported Python versions are 3.9 through 3.12
       - The Data Management Framework (DMF) is no longer supported. Importing `idaes.core.dmf` will cause a deprecation warning to be displayed until the next release
-
   "2.6.0rc1":
     refs_to_cherrypick:
 
