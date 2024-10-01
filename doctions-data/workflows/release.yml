@@ -441,6 +441,22 @@ jobs:
           git push
 
   environment-info:
+    if: ${{ project.id in ["idaes", "idaes-examples"] }}
+    name: Collect environment info for the release using workflow
+    steps:
+      - name: Trigger workflow and wait until it finishes
+        run: |
+          gh workflow run -R lbianchi-lbl/pse-releng release-${{ project.python.name }}.yml -F phase=env-snapshot -F tag=${{ release.tag }}
+      - name: Download artifact and upload as release artifact
+        run: |
+          # bash/zsh
+          pushd "$(mktemp -d)"
+          artifact_name="${{ project.python.name }}-${{ release.tag }}"
+          gh run download -R lbianchi-lbl/pse-releng -n "$artifact_name" -D "$artifact_name"
+          gh release upload --repo "${{ project.github.full_name }}" "${{ release.tag }}" $artifact_name/*
+
+  environment-info-manual:
+    if: ${{ project.id not in ["idaes", "idaes-examples"] }}
     name: Collect environment info for the release
     steps:
       - name: Install from PyPI
