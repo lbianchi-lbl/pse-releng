@@ -296,14 +296,14 @@ jobs:
 
   python-package:
     name: Creating the `${{ project.python.name }}` Python package distribution
-    if: ${{ project.id in ["idaes-pse"] }}
+    if: ${{ project.id in ["idaes"] }}
     steps:
       - name: Trigger the PyPI workflow using `gh workflow run`
         run: |
           gh workflow run -R lbianchi-lbl/pse-releng release-idaes-pse.yml -F phase=pypi -F tag=${{ release.tag }}
   python-package-manual:
     name: Creating the `${{ project.python.name }}` Python package distribution
-    if: ${{ project.python.name and project.id not in ["idaes-pse"] }}
+    if: ${{ project.python.name and project.id not in ["idaes"] }}
     steps:
       - name: In a clean directory, clone the repo and switch to the release branch
         run: |
