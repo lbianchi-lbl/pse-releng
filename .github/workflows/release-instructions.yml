@@ -7,7 +7,7 @@ on:
       - opened
       - synchronize
     paths:
-      - data/**.yml
+      - doctions-data/contexts/**.yml
 
   workflow_dispatch:
     inputs:
@@ -37,8 +37,8 @@ jobs:
     name: Run doctions for `${{ inputs.target }}` with `${{ inputs.workflow }}` workflow
     uses: ./.github/workflows/doctions.yml
     with:
-      contexts-file: data/${{ inputs.target }}.yml
-      workflow-file: data/workflows/${{ inputs.workflow }}.yml
+      contexts-file: doctions-data/contexts/${{ inputs.target }}.yml
+      workflow-file: doctions-data/workflows/${{ inputs.workflow }}.yml
       display-step-summary: 'yes'
 
   targets:
@@ -56,7 +56,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: files
         run: |
-          relevant_files=$(gh pr view ${{ github.event.number }} --json files --jq '.files[] | select(.path|test("data/*")) | .path')
+          relevant_files=$(gh pr view ${{ github.event.number }} --json files --jq '.files[] | select(.path|test("doctions-data/contexts/*")) | .path')
           echo "modified=${relevant_files}" >> "$GITHUB_OUTPUT"
 
   doctions-pr:
@@ -65,7 +65,7 @@ jobs:
     uses: ./.github/workflows/doctions.yml
     with:
       contexts-file: ${{ needs.targets.outputs.modified }}
-      workflow-file: data/workflows/release.yml
+      workflow-file: doctions-data/workflows/release.yml
 
   update-pr:
     name: 'Update PR #${{ github.event.number }}'
