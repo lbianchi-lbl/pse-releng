@@ -3,7 +3,7 @@ name: Test doctions
 on:
   push:
     paths:
-      - data/workflows/**.yml
+      - doctions-data/workflows/**.yml
       - tools/doctions/**
 
   workflow_dispatch:
@@ -13,8 +13,8 @@ jobs:
     name: doctions (${{ matrix.workflow }}/${{ matrix.context }})
     uses: ./.github/workflows/doctions.yml
     with:
-      contexts-file: data/${{ matrix.context }}.yml
-      workflow-file: data/workflows/${{ matrix.workflow }}.yml
+      contexts-file: doctions-data/contexts/${{ matrix.context }}.yml
+      workflow-file: doctions-data/workflows/${{ matrix.workflow }}.yml
     strategy:
       fail-fast: false
       matrix:
