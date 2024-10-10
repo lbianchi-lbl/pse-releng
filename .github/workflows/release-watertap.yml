@@ -32,7 +32,7 @@ jobs:
       build-command: |
         python -m build
       test-command: |
-        idaes get-extensions --extra petsc --verbose
+        idaes get-extensions --extra petsc --verbose --distro ubuntu2204
         pip install pytest
         pytest --pyargs watertap
     secrets:
