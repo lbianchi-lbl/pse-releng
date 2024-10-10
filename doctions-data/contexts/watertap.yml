@@ -52,7 +52,7 @@ releases:
     refs_to_cherrypick:
       # #1507
       - c012a8adbc04f4681e065ec90299f83169ca156a
-    highlights: |
+    highlights:
       - Fixed a bug for enthalpy units in crystallizer property package
       - Removed module type option for osmotically assisted reverse osmosis
       - Added an option to add volume to the membrane channel
