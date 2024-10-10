@@ -33,6 +33,12 @@ on:
         default: '3.11'
         type: string
 
+      runner-image:
+        description: Runner image to use
+        type: string
+        required: false
+        default: ubuntu-latest
+
       build-command:
         description: Command to run to generate package files
         required: false
@@ -88,7 +94,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner-image }}
 
     steps:
 
@@ -125,7 +131,8 @@ jobs:
   test-whl:
     needs: [build]
     name: Test ${{ inputs.pypi-name }} from .whl file
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner-image }}
+
 
     steps:
      - uses: actions/download-artifact@v4
@@ -157,7 +164,7 @@ jobs:
   upload-test-pypi:
     if: inputs.upload
     needs: [test-whl]
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner-image }}
     env:
       TWINE_USERNAME: __token__
       TWINE_NON_INTERACTIVE: "true"
@@ -184,7 +191,7 @@ jobs:
          twine upload dist/*
 
   install-test-pypi:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner-image }}
     needs: [upload-test-pypi]
 
     steps:
@@ -213,7 +220,7 @@ jobs:
   upload-pypi:
     if: inputs.upload
     needs: [install-test-pypi]
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner-image }}
     env:
       TWINE_USERNAME: __token__
       TWINE_NON_INTERACTIVE: "true"

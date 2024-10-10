@@ -31,8 +31,9 @@ jobs:
       python-version: '3.11'
       build-command: |
         python -m build
+      runner-image: ubuntu-22.04
       test-command: |
-        idaes get-extensions --extra petsc --verbose --distro ubuntu2204
+        idaes get-extensions --extra petsc --verbose
         pip install pytest
         pytest --pyargs watertap
     secrets:
