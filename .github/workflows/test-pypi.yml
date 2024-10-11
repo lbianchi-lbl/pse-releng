@@ -35,7 +35,6 @@ jobs:
             release-tag: '2.6.0rc0'
             pypi-name: idaes-pse
             python-version: '3.10'
-            runner-image: ubuntu-22.04
             extras-require: '[ui,coolprop,grid,omlt]'
             test-command: |
               idaes get-extensions --extra petsc --verbose
@@ -56,3 +55,4 @@ jobs:
       build-command: ${{ matrix.build-command }}
       extras-require: ${{ matrix.extras-require }}
       test-command: ${{ matrix.test-command }}
+      runner-image: ubuntu-22.04  # strictly speaking, this is only needed for idaes get-extensions
