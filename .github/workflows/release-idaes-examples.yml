@@ -29,6 +29,7 @@ jobs:
       release-tag: ${{ inputs.tag }}
       pypi-name: idaes-examples
       python-version: '3.11'
+      runner-image: ubuntu-22.04
       build-command: |
         # we specify --wheel because the package size is large enough (71M)
         # that the default behavior of building sdist + wheel would push it past the PyPI 100M maximum
