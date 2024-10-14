@@ -48,6 +48,33 @@ project:
         month: 12
 
 releases:
+  '1.1.0':
+    highlights:
+      - Fixed a bug for enthalpy units in crystallizer property package
+      - Removed module type option for osmotically assisted reverse osmosis
+      - Added an option to add volume to the membrane channel
+      - Refined the ADM1/ASM2d interface
+      - Updated BSM2 costing
+      - Added modified ADM1 flowsheet
+      - Added functionality to get LCOW and SEC for each unit
+      - Added debugging solver wrapper and documentation
+      - Added helper functions for 0D properties in the membrane channel
+  '1.1.0rc1':
+    refs_to_cherrypick:
+      # #1507
+      - c012a8adbc04f4681e065ec90299f83169ca156a
+    highlights:
+      - Fixed a bug for enthalpy units in crystallizer property package
+      - Removed module type option for osmotically assisted reverse osmosis
+      - Added an option to add volume to the membrane channel
+      - Refined the ADM1/ASM2d interface
+      - Updated BSM2 costing
+      - Added modified ADM1 flowsheet
+      - Added functionality to get LCOW and SEC for each unit
+      - Added debugging solver wrapper and documentation
+      - Added helper functions for 0D properties in the membrane channel
+  '1.1.0rc0':
+    next_dev_version_tag: 1.2.dev0
   '1.0.0':
     refs_to_cherrypick: []
   '1.0.0rc1':
