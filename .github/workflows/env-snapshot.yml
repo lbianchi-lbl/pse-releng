@@ -115,3 +115,7 @@ jobs:
           name: ${{ matrix.env-name }}
           path: ${{ env.OUTPUT_DIR }}
           if-no-files-found: error
+          # it might be useful to retain this artifact for a longer time
+          # it should not significantly impact the storage limit
+          # since it won't be more than a few kB in size
+          retention-days: 90

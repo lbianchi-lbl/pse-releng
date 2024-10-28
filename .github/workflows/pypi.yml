@@ -127,6 +127,9 @@ jobs:
        with:
          name: ${{ inputs.artifact-name }}
          path: dist/
+         # retention time should be as low as possible
+         # since these artifacts can be large (up to 100-ish MB)
+         retention-days: 1
 
   test-whl:
     needs: [build]
