@@ -29,6 +29,8 @@ project:
       '2.1': {year: 2023, month: 5}
 
 releases:
+  '2.7.0rc0':
+    next_dev_version_tag: "2.8.dev0"
   '2.6.0':
     highlights: []
   '2.6.0rc0':
