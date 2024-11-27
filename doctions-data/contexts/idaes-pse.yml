@@ -51,6 +51,8 @@ project:
         month: 8
 
 releases:
+  "2.7.0rc0":
+    next_dev_version_tag: "2.8.dev0"
   "2.6.0":
     highlights_text: |
       ### Deprecations and Removals
