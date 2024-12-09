@@ -1,0 +1,50 @@
+name: Release parameter-sweep
+run-name: Release parameter-sweep ${{ inputs.tag }}
+
+on:
+  workflow_dispatch:
+    inputs:
+
+      tag:
+        description: Version tag
+        type: string
+        required: true
+
+      phase:
+        description: Which phase of the release process to run
+        type: choice
+        required: true
+        options:
+          - pypi
+
+jobs:
+
+  pypi:
+    name: Create PyPI package for parameter-sweep ${{ inputs.tag }}
+    if: inputs.phase == 'pypi'
+    uses: ./.github/workflows/pypi.yml
+    with:
+      upload: true
+      repository: watertap-org/parameter-sweep
+      release-tag: ${{ inputs.tag }}
+      pypi-name: parameter-sweep
+      python-version: '3.11'
+      build-command: |
+        python -m build
+      runner-image: ubuntu-22.04
+      test-command: |
+        idaes get-extensions --verbose
+        pip install pytest
+        pytest --pyargs parameter_sweep -v
+    secrets:
+      test-pypi-token: ${{ secrets.TESTPYPI_TOKEN_LBIANCHI }}
+      pypi-token: ${{ secrets.PYPI_TOKEN_LBIANCHI }}
+
+  env-snapshot:
+    name: Create env snapshot for parameter-sweep ${{ inputs.tag }}
+    needs: [pypi]
+    uses: ./.github/workflows/env-snapshot.yml
+    with:
+      pypi-name: parameter-sweep
+      version: ${{ inputs.tag }}
+      python-version: '3.11'

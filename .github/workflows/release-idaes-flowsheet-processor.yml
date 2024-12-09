@@ -1,0 +1,50 @@
+name: Release idaes-flowsheet-processor
+run-name: Release idaes-flowsheet-processor ${{ inputs.tag }}
+
+on:
+  workflow_dispatch:
+    inputs:
+
+      tag:
+        description: Version tag
+        type: string
+        required: true
+
+      phase:
+        description: Which phase of the release process to run
+        type: choice
+        required: true
+        options:
+          - pypi
+
+jobs:
+
+  pypi:
+    name: Create PyPI package for idaes-flowsheet-processor ${{ inputs.tag }}
+    if: inputs.phase == 'pypi'
+    uses: ./.github/workflows/pypi.yml
+    with:
+      upload: true
+      repository: watertap-org/idaes-flowsheet-processor
+      release-tag: ${{ inputs.tag }}
+      pypi-name: idaes-flowsheet-processor
+      python-version: '3.11'
+      build-command: |
+        python -m build
+      runner-image: ubuntu-22.04
+      test-command: |
+        idaes get-extensions --verbose
+        pip install pytest
+        pytest --pyargs idaes_flowsheet_processor -v
+    secrets:
+      test-pypi-token: ${{ secrets.TESTPYPI_TOKEN_LBIANCHI }}
+      pypi-token: ${{ secrets.PYPI_TOKEN_LBIANCHI }}
+
+  env-snapshot:
+    name: Create env snapshot for idaes-flowsheet-processor ${{ inputs.tag }}
+    needs: [pypi]
+    uses: ./.github/workflows/env-snapshot.yml
+    with:
+      pypi-name: idaes-flowsheet-processor
+      version: ${{ inputs.tag }}
+      python-version: '3.11'
