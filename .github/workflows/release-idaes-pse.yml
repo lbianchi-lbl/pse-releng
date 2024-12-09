@@ -29,6 +29,7 @@ jobs:
       release-tag: ${{ inputs.tag }}
       pypi-name: idaes-pse
       python-version: '3.11'
+      runner-image: ubuntu-22.04
       build-command: |
         python setup.py sdist bdist_wheel
       extras-require: '[ui,coolprop,grid]'
