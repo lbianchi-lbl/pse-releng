@@ -33,9 +33,9 @@ jobs:
         python -m build
       runner-image: ubuntu-22.04
       test-command: |
-        idaes get-extensions --verbose
         pip install pytest
         pip install "watertap @ git+https://github.com/watertap-org/watertap@main"
+        idaes get-extensions --verbose
         pytest --pyargs idaes_flowsheet_processor -vrs
     secrets:
       test-pypi-token: ${{ secrets.TESTPYPI_TOKEN_LBIANCHI }}
