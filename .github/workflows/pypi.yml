@@ -191,7 +191,7 @@ jobs:
          TWINE_PASSWORD: ${{ secrets.test-pypi-token }}
          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
        run: |
-         twine upload dist/*
+         twine upload --verbose dist/*
 
   install-test-pypi:
     runs-on: ${{ inputs.runner-image }}
@@ -247,6 +247,6 @@ jobs:
          TWINE_PASSWORD: ${{ secrets.pypi-token }}
          TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
        run: |
-         twine upload dist/*
+         twine upload --verbose dist/*
 
   # upload:
