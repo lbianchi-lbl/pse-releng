@@ -48,6 +48,9 @@ project:
         month: 12
 
 releases:
+  1.2.0rc0:
+    next_dev_version_tag: 1.3.dev0
+    highlights: []
   '1.1.0':
     highlights:
       - Fixed a bug for enthalpy units in crystallizer property package
