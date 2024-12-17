@@ -206,7 +206,7 @@ jobs:
       - name: Commit the changes to the default branch
         run: |
           # check that we're on the default branch
-          test "$(git branch --show-current)" = "${{ project.github.default_branch }}" && git commit -m "${{ release.next_dev_version_tag }}"
+          test "$(git branch --show-current)" = "${{ project.github.default_branch }}" && git commit -a -m "${{ release.next_dev_version_tag }}"
       - name: Review the changes before pushing
         run: |
           git log --oneline -n 5  # it should show only one commit which is not pushed
@@ -216,7 +216,7 @@ jobs:
           git push
       - name: Tag the release
         run: |
-          git tag "${{ release.tag }}" "${{ release.next_dev_version_tag }}"
+          git tag "${{ release.tag }}" -m "${{ release.next_dev_version_tag }}"
           git push origin tag "${{ release.tag }}"
 
   github-release:
