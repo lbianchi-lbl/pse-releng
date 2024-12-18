@@ -214,14 +214,16 @@ jobs:
       - name: Push the changes
         run: |
           git push
-      - name: Tag the release
-        run: |
-          git tag "${{ release.tag }}" -m "${{ release.next_dev_version_tag }}"
-          git push origin tag "${{ release.tag }}"
 
   github-release:
     name: Creating the GitHub release
     steps:
+      - name: In a clean directory, clone the repo and switch to the release branch, add release tag
+        run: |
+          pushd "$(mktemp -d)"
+          ${{ release.clone_branch_command }}
+          git tag "${{ release.tag }}"
+          git push origin tag "${{ release.tag }}"
       - name: Generate release notes and create GitHub draft release
         uses: github-release
         with:
