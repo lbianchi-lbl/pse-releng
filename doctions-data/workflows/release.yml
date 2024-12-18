@@ -30,11 +30,9 @@ jobs:
           items:
             - Open `./setup.py`
             - Search for `version=` (in the kwargs for the call to `setup()`) and set `version="${{ release.tag }}"`
-            - |
-              Search for `SPECIAL_DEPENDENCIES_FOR_RELEASE` and set it to `SPECIAL_DEPENDENCIES_FOR_RELEASE = ["idaes-pse${{ release.extra.idaes_pse_version }}"]`
-            - Search for `SPECIAL_DEPENDENCIES_FOR_PRERELEASE` and set it to `SPECIAL_DEPENDENCIES_FOR_PRERELEASE = SPECIAL_DEPENDENCIES_FOR_RELEASE`
             - Search for `install_requires=`
-            - Make sure **only** `SPECIAL_DEPENDENCIES_FOR_RELEASE` (i.e. the **FOR_RELEASE** variant) is included in `install_requires`
+            - Verify that `idaes-pse` is set to the appropriate version
+            - Verify that no URLs are present in the requirements
             - Save and exit
             - Open `./docs/conf.py`
             - Search for `version =` and set `version = "${{ release.tag }}"`
