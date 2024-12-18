@@ -48,6 +48,8 @@ project:
         month: 12
 
 releases:
+  '1.2.0':
+    highlights: []
   1.2.0rc1:
     highlights: []
     refs_to_cherrypick:
