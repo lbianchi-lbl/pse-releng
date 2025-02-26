@@ -31,7 +31,7 @@ jobs:
       python-version: '3.11'
       runner-image: ubuntu-22.04
       build-command: |
-        python setup.py sdist bdist_wheel
+        python -m build
       extras-require: '[ui,coolprop,grid]'
       test-command: |
         idaes get-extensions --extra petsc --verbose
