@@ -1,0 +1,50 @@
+name: Release PARETO
+run-name: Release PARETO ${{ inputs.tag }}
+
+on:
+  workflow_dispatch:
+    inputs:
+
+      tag:
+        description: Version tag
+        type: string
+        required: true
+
+      phase:
+        description: Which phase of the release process to run
+        type: choice
+        required: true
+        options:
+          - pypi
+
+jobs:
+
+  pypi:
+    name: Create PyPI package for PARETO ${{ inputs.tag }}
+    if: inputs.phase == 'pypi'
+    uses: ./.github/workflows/pypi.yml
+    with:
+      upload: true
+      repository: project-pareto/project-pareto
+      release-tag: ${{ inputs.tag }}
+      pypi-name: project-pareto
+      python-version: '3.11'
+      build-command: |
+        python -m build
+      runner-image: ubuntu-22.04
+      test-command: |
+        idaes get-extensions --extra petsc --verbose
+        pip install pytest
+        pytest --pyargs pareto -m "unit"
+    secrets:
+      test-pypi-token: ${{ secrets.TESTPYPI_TOKEN_LBIANCHI }}
+      pypi-token: ${{ secrets.PYPI_TOKEN_LBIANCHI }}
+
+  env-snapshot:
+    name: Create env snapshot for PARETO ${{ inputs.tag }}
+    needs: [pypi]
+    uses: ./.github/workflows/env-snapshot.yml
+    with:
+      pypi-name: project-pareto
+      version: ${{ inputs.tag }}
+      python-version: '3.11'
