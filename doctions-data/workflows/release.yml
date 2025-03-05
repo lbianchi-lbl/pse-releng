@@ -213,6 +213,7 @@ jobs:
         run: |
           git push
       - name: Tag the release
+        if: ${{ project.id in ["prommis"] }}
         run: |
           git tag "${{ release.tag }}" "${{ release.next_dev_version_tag }}"
           git push origin tag "${{ release.tag }}"
