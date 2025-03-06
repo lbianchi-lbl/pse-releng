@@ -51,6 +51,8 @@ project:
         month: 8
 
 releases:
+  "2.8.0":
+    highlights_text: ""
   "2.8.0rc2":
     highlights_text: ""
     refs_to_cherrypick: 
