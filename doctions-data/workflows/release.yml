@@ -231,6 +231,12 @@ jobs:
           _asset_file_name="ccsi-foqus-${{ release.tag }}-examples.zip"
           zip -r "$_asset_file_name" examples/
           gh release upload "${{ release.tag }}" "$_asset_file_name" --repo "${{ project.github.full_name }}"
+      - name: Create a ZIP file for the examples and attach it to the release as an asset
+        if: ${{ project.id == "pareto" }}
+        run: |
+          _asset_file_name="pareto-${{ release.tag }}-examples.zip"
+          zip -r "$_asset_file_name" pareto/examples/
+          gh release upload "${{ release.tag }}" "$_asset_file_name" --repo "${{ project.github.full_name }}"
       - name: Update the compatibility file on `main`
         if: ${{ project.id == "idaes-examples-pse" }}
         uses: checklist
