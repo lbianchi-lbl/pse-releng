@@ -103,7 +103,7 @@ jobs:
             - Open `./setup.py`
             - Search for VERSION and set it to `VERSION = "${{ release.tag}}"`
             - Save and exit
-            - '`git add setup.py docs/conf.py`'
+            - '`git add setup.py`'
       - name: Check that the local modifications to the version are as they should
         run: |
           git status      # there shouldn't be any other unstaged files
