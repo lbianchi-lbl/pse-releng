@@ -103,7 +103,7 @@ jobs:
             - Open `./setup.py`
             - Search for VERSION and set it to `VERSION = "${{ release.tag}}"`
             - Save and exit
-            - '`git add setup.py docs/conf.py`'
+            - '`git add setup.py`'
       - name: Check that the local modifications to the version are as they should
         run: |
           git status      # there shouldn't be any other unstaged files
@@ -450,7 +450,7 @@ jobs:
           git push
 
   environment-info:
-    if: ${{ project.id in ["idaes", "idaes-examples", "watertap"] }}
+    if: ${{ project.id in ["idaes", "idaes-examples", "watertap", "pareto"] }}
     name: Collect environment info for the release from env-snapshot workflow
     steps:
       - name: Download workflow artifact and upload as release artifact
@@ -462,7 +462,7 @@ jobs:
           gh release upload --repo "${{ project.github.full_name }}" "${{ release.tag }}" $artifact_name/*
 
   environment-info-manual:
-    if: ${{ project.id not in ["idaes", "idaes-examples", "watertap"] }}
+    if: ${{ project.id not in ["idaes", "idaes-examples", "watertap", "pareto"] }}
     name: Collect environment info for the release
     steps:
       - name: Install from PyPI
