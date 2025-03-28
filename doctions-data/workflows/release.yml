@@ -305,14 +305,14 @@ jobs:
 
   python-package:
     name: Creating the `${{ project.python.name }}` Python package distribution
-    if: ${{ project.python.name and project.id in ["idaes", "idaes-examples", "watertap", "prommis", "pareto"] }}
+    if: ${{ project.python.name and project.id in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui"] }}
     steps:
       - name: Trigger the PyPI workflow using `gh workflow run`
         run: |
           gh workflow run -R lbianchi-lbl/pse-releng release-${{ project.python.name }}.yml -F phase=pypi -F tag=${{ release.tag }}
   python-package-manual:
     name: Creating the `${{ project.python.name }}` Python package distribution
-    if: ${{ project.python.name and project.id not in ["idaes", "idaes-examples", "watertap", "prommis", "pareto"] }}
+    if: ${{ project.python.name and project.id not in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui"] }}
     steps:
       - name: In a clean directory, clone the repo and switch to the release branch
         run: |
@@ -450,7 +450,7 @@ jobs:
           git push
 
   environment-info:
-    if: ${{ project.id in ["idaes", "idaes-examples", "watertap", "pareto"] }}
+    if: ${{ project.id in ["idaes", "idaes-examples", "watertap", "pareto", "idaes-ui"] }}
     name: Collect environment info for the release from env-snapshot workflow
     steps:
       - name: Download workflow artifact and upload as release artifact
@@ -462,7 +462,7 @@ jobs:
           gh release upload --repo "${{ project.github.full_name }}" "${{ release.tag }}" $artifact_name/*
 
   environment-info-manual:
-    if: ${{ project.id not in ["idaes", "idaes-examples", "watertap", "pareto"] }}
+    if: ${{ project.id not in ["idaes", "idaes-examples", "watertap", "pareto", "idaes-ui"] }}
     name: Collect environment info for the release
     steps:
       - name: Install from PyPI
