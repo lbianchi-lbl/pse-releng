@@ -45,5 +45,5 @@ jobs:
     with:
       pypi-name: idaes-ui
       version: ${{ inputs.tag }}
-      pip-install-target: idaes-ui==${{ inputs.tag }} idaes-pse
+      pip-install-target: "idaes-ui==${{ inputs.tag }}" idaes-pse
       python-version: '3.11'

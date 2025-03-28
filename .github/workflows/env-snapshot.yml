@@ -66,7 +66,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - pip-install-target: ${{ inputs.pip-install-target || format('{0}{1}=={2}', inputs.pypi-name, inputs.extras-require, inputs.version) }}
+          - pip-install-target: ${{ inputs.pip-install-target || format('"{0}{1}=={2}"', inputs.pypi-name, inputs.extras-require, inputs.version) }}
             env-name: ${{ inputs.env-name || format('{0}-{1}', inputs.pypi-name, inputs.version) }}
             python-version: ${{ inputs.python-version }}
             requirements-file: ${{ inputs.requirements-file }}
@@ -85,7 +85,7 @@ jobs:
 
       - name: Install ${{ matrix.pip-install-target }}
         run: |
-          pip install "${{ matrix.pip-install-target }}"
+          pip install ${{ matrix.pip-install-target }}
 
       - name: Create output directory ${{ env.OUTPUT_DIR }}
         id: output-dir
