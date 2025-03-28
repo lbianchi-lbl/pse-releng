@@ -48,3 +48,13 @@ jobs:
       version: ${{ inputs.tag }}
       pip-install-target: '"idaes-ui==${{ inputs.tag }}" idaes-pse'
       python-version: '3.11'
+
+  env-snapshot-standalone:
+    name: Create env snapshot for idaes-ui ${{ inputs.tag }}
+    if: inputs.phase == 'env-snapshot'
+    uses: ./.github/workflows/env-snapshot.yml
+    with:
+      pypi-name: idaes-ui
+      version: ${{ inputs.tag }}
+      pip-install-target: '"idaes-ui==${{ inputs.tag }}" idaes-pse'
+      python-version: '3.11'
