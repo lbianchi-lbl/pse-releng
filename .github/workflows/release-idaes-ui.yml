@@ -1,5 +1,5 @@
-name: Release idaes-pse
-run-name: Release idaes-pse ${{ inputs.tag }}
+name: Release idaes-ui
+run-name: Release idaes-ui${{ inputs.tag }}
 
 on:
   workflow_dispatch:
@@ -16,38 +16,45 @@ on:
         required: true
         options:
           - pypi
+          - env-snapshot
 
 jobs:
 
   pypi:
-    name: Create PyPI package for idaes-pse ${{ inputs.tag }}
+    name: Create PyPI package for idaes-ui ${{ inputs.tag }}
     if: inputs.phase == 'pypi'
     uses: ./.github/workflows/pypi.yml
     with:
       upload: true
-      repository: IDAES/idaes-pse
+      repository: IDAES/idaes-ui
       release-tag: ${{ inputs.tag }}
-      pypi-name: idaes-pse
+      pypi-name: idaes-ui
       python-version: '3.11'
       runner-image: ubuntu-22.04
       build-command: |
         python -m build
-      extras-require: '[ui,coolprop,grid]'
       test-command: |
-        idaes get-extensions --extra petsc --verbose
-        pip install pytest
-        wget https://raw.githubusercontent.com/IDAES/idaes-pse/main/pytest.ini
-        pytest --pyargs idaes -m "unit" -x
+        python -c 'from importlib.metadata import version; print(version("idaes-ui"))'
     secrets:
       test-pypi-token: ${{ secrets.TESTPYPI_TOKEN_LBIANCHI }}
       pypi-token: ${{ secrets.PYPI_TOKEN_LBIANCHI }}
 
   env-snapshot:
-    name: Create env snapshot for idaes-pse ${{ inputs.tag }}
+    name: Create env snapshot for idaes-ui ${{ inputs.tag }}
     needs: [pypi]
     uses: ./.github/workflows/env-snapshot.yml
     with:
-      pypi-name: idaes-pse
+      pypi-name: idaes-ui
       version: ${{ inputs.tag }}
-      extras-require: '[ui,coolprop,grid]'
+      pip-install-target: '"idaes-ui==${{ inputs.tag }}" idaes-pse'
+      python-version: '3.11'
+
+  env-snapshot-standalone:
+    name: Create env snapshot for idaes-ui ${{ inputs.tag }}
+    if: inputs.phase == 'env-snapshot'
+    uses: ./.github/workflows/env-snapshot.yml
+    with:
+      pypi-name: idaes-ui
+      version: ${{ inputs.tag }}
+      pip-install-target: '"idaes-ui==${{ inputs.tag }}" idaes-pse'
       python-version: '3.11'

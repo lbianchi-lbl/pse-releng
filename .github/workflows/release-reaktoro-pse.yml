@@ -1,5 +1,5 @@
-name: Release idaes-pse
-run-name: Release idaes-pse ${{ inputs.tag }}
+name: Release reaktoro-pse
+run-name: Release reaktoro-pse ${{ inputs.tag }}
 
 on:
   workflow_dispatch:
@@ -20,34 +20,31 @@ on:
 jobs:
 
   pypi:
-    name: Create PyPI package for idaes-pse ${{ inputs.tag }}
+    name: Create PyPI package for reaktoro-pse ${{ inputs.tag }}
     if: inputs.phase == 'pypi'
     uses: ./.github/workflows/pypi.yml
     with:
       upload: true
-      repository: IDAES/idaes-pse
+      repository: watertap-org/reaktoro-pse
       release-tag: ${{ inputs.tag }}
-      pypi-name: idaes-pse
+      pypi-name: reaktoro-pse
       python-version: '3.11'
-      runner-image: ubuntu-22.04
       build-command: |
         python -m build
-      extras-require: '[ui,coolprop,grid]'
+      runner-image: ubuntu-22.04
       test-command: |
-        idaes get-extensions --extra petsc --verbose
+        idaes get-extensions --verbose
         pip install pytest
-        wget https://raw.githubusercontent.com/IDAES/idaes-pse/main/pytest.ini
-        pytest --pyargs idaes -m "unit" -x
+        pytest --pyargs reaktoro_pse -v
     secrets:
       test-pypi-token: ${{ secrets.TESTPYPI_TOKEN_LBIANCHI }}
       pypi-token: ${{ secrets.PYPI_TOKEN_LBIANCHI }}
 
   env-snapshot:
-    name: Create env snapshot for idaes-pse ${{ inputs.tag }}
+    name: Create env snapshot for reaktoro-pse ${{ inputs.tag }}
     needs: [pypi]
     uses: ./.github/workflows/env-snapshot.yml
     with:
-      pypi-name: idaes-pse
+      pypi-name: reaktoro-pse
       version: ${{ inputs.tag }}
-      extras-require: '[ui,coolprop,grid]'
       python-version: '3.11'

@@ -30,11 +30,9 @@ jobs:
           items:
             - Open `./setup.py`
             - Search for `version=` (in the kwargs for the call to `setup()`) and set `version="${{ release.tag }}"`
-            - |
-              Search for `SPECIAL_DEPENDENCIES_FOR_RELEASE` and set it to `SPECIAL_DEPENDENCIES_FOR_RELEASE = ["idaes-pse${{ release.extra.idaes_pse_version }}"]`
-            - Search for `SPECIAL_DEPENDENCIES_FOR_PRERELEASE` and set it to `SPECIAL_DEPENDENCIES_FOR_PRERELEASE = SPECIAL_DEPENDENCIES_FOR_RELEASE`
             - Search for `install_requires=`
-            - Make sure **only** `SPECIAL_DEPENDENCIES_FOR_RELEASE` (i.e. the **FOR_RELEASE** variant) is included in `install_requires`
+            - Verify that `idaes-pse` is set to the appropriate version
+            - Verify that no URLs are present in the requirements
             - Save and exit
             - Open `./docs/conf.py`
             - Search for `version =` and set `version = "${{ release.tag }}"`
@@ -105,7 +103,7 @@ jobs:
             - Open `./setup.py`
             - Search for VERSION and set it to `VERSION = "${{ release.tag}}"`
             - Save and exit
-            - '`git add setup.py docs/conf.py`'
+            - '`git add setup.py`'
       - name: Check that the local modifications to the version are as they should
         run: |
           git status      # there shouldn't be any other unstaged files
@@ -214,7 +212,11 @@ jobs:
       - name: Push the changes
         run: |
           git push
-
+      - name: Tag the release
+        if: ${{ project.id in ["prommis"] }}
+        run: |
+          git tag "${{ release.tag }}" "${{ release.next_dev_version_tag }}"
+          git push origin tag "${{ release.tag }}"
   github-release:
     name: Creating the GitHub release
     steps:
@@ -233,6 +235,12 @@ jobs:
         run: |
           _asset_file_name="ccsi-foqus-${{ release.tag }}-examples.zip"
           zip -r "$_asset_file_name" examples/
+          gh release upload "${{ release.tag }}" "$_asset_file_name" --repo "${{ project.github.full_name }}"
+      - name: Create a ZIP file for the examples and attach it to the release as an asset
+        if: ${{ project.id == "pareto" }}
+        run: |
+          _asset_file_name="pareto-${{ release.tag }}-examples.zip"
+          zip -r "$_asset_file_name" pareto/examples/
           gh release upload "${{ release.tag }}" "$_asset_file_name" --repo "${{ project.github.full_name }}"
       - name: Update the compatibility file on `main`
         if: ${{ project.id == "idaes-examples-pse" }}
@@ -302,14 +310,14 @@ jobs:
 
   python-package:
     name: Creating the `${{ project.python.name }}` Python package distribution
-    if: ${{ project.python.name and project.id in ["idaes", "idaes-examples", "watertap", "prommis"] }}
+    if: ${{ project.python.name and project.id in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui"] }}
     steps:
       - name: Trigger the PyPI workflow using `gh workflow run`
         run: |
           gh workflow run -R lbianchi-lbl/pse-releng release-${{ project.python.name }}.yml -F phase=pypi -F tag=${{ release.tag }}
   python-package-manual:
     name: Creating the `${{ project.python.name }}` Python package distribution
-    if: ${{ project.python.name and project.id not in ["idaes", "idaes-examples", "watertap", "prommis"] }}
+    if: ${{ project.python.name and project.id not in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui"] }}
     steps:
       - name: In a clean directory, clone the repo and switch to the release branch
         run: |
@@ -447,7 +455,7 @@ jobs:
           git push
 
   environment-info:
-    if: ${{ project.id in ["idaes", "idaes-examples", "watertap"] }}
+    if: ${{ project.id in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui"] }}
     name: Collect environment info for the release from env-snapshot workflow
     steps:
       - name: Download workflow artifact and upload as release artifact
@@ -459,7 +467,7 @@ jobs:
           gh release upload --repo "${{ project.github.full_name }}" "${{ release.tag }}" $artifact_name/*
 
   environment-info-manual:
-    if: ${{ project.id not in ["idaes", "idaes-examples", "watertap"] }}
+    if: ${{ project.id not in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui"] }}
     name: Collect environment info for the release
     steps:
       - name: Install from PyPI

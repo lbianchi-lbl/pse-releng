@@ -42,7 +42,7 @@ jobs:
               wget https://raw.githubusercontent.com/IDAES/idaes-pse/main/pytest.ini
               pytest --pyargs idaes -m "unit" -x
             build-command: |
-              python setup.py sdist bdist_wheel
+              python -m build
 
     uses: ./.github/workflows/pypi.yml
     with:

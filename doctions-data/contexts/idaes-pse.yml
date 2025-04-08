@@ -51,6 +51,17 @@ project:
         month: 8
 
 releases:
+  "2.8.0":
+    highlights_text: ""
+  "2.8.0rc2":
+    highlights_text: ""
+    refs_to_cherrypick: 
+      # #1587
+      - 6cea367e53f7cae5615eb9f627708f35379ce1e3
+  "2.8.0rc1":
+    highlights_text: ""
+  "2.8.0rc0":
+    next_dev_version_tag: "2.9.dev0"
   "2.7.0":
     highlights_text: ""
   "2.7.0rc0":
