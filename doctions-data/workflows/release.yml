@@ -204,7 +204,7 @@ jobs:
       - name: Commit the changes to the default branch
         run: |
           # check that we're on the default branch
-          test "$(git branch --show-current)" = "${{ project.github.default_branch }}" && git commit -m "${{ release.next_dev_version_tag }}"
+          test "$(git branch --show-current)" = "${{ project.github.default_branch }}" && git commit -a -m "${{ release.next_dev_version_tag }}"
       - name: Review the changes before pushing
         run: |
           git log --oneline -n 5  # it should show only one commit which is not pushed
@@ -217,10 +217,15 @@ jobs:
         run: |
           git tag "${{ release.tag }}" "${{ release.next_dev_version_tag }}"
           git push origin tag "${{ release.tag }}"
-
   github-release:
     name: Creating the GitHub release
     steps:
+      - name: In a clean directory, clone the repo and switch to the release branch, add release tag
+        run: |
+          pushd "$(mktemp -d)"
+          ${{ release.clone_branch_command }}
+          git tag "${{ release.tag }}"
+          git push origin tag "${{ release.tag }}"
       - name: Generate release notes and create GitHub draft release
         uses: github-release
         with:
