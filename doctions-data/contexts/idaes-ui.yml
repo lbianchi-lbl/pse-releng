@@ -24,6 +24,12 @@ project:
     cycles: {}
 
 releases:
+  "0.25.10":
+    release_branch: release/0.25.10.x
+    next_dev_version_tag: 0.25.11.dev0
+    highlights_text: |
+      ### New functionality
+      - Python 3.13 Support. Changes for compatability with IDAES 2.9
   "0.25.3":
     release_branch: release/0.25.3.x
     next_dev_version_tag: 0.25.4.dev0
