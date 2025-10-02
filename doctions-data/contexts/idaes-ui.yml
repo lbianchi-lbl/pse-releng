@@ -24,7 +24,7 @@ project:
     cycles: {}
 
 releases:
- "0.25.10":
+  "0.25.10":
     release_branch: release/0.25.10.x
     next_dev_version_tag: 0.25.11.dev0
     highlights_text: |
