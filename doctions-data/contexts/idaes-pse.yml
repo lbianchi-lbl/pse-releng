@@ -51,6 +51,8 @@ project:
         month: 8
 
 releases:
+  "2.9.0rc0":
+    next_dev_version_tag: "2.9.dev0"
   "2.8.0":
     highlights_text: ""
   "2.8.0rc2":
