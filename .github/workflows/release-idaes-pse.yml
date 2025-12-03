@@ -37,7 +37,7 @@ jobs:
         idaes get-extensions --extra petsc --verbose
         pip install pytest
         wget https://raw.githubusercontent.com/IDAES/idaes-pse/main/pytest.ini
-        pytest --pyargs idaes -m "unit" -x -k 'not TestMSContactorInitializerNoHoldup'
+        pytest --pyargs idaes -m "unit" -k 'not TestMSContactorInitializerNoHoldup'
     secrets:
       test-pypi-token: ${{ secrets.TESTPYPI_TOKEN_LBIANCHI }}
       pypi-token: ${{ secrets.PYPI_TOKEN_LBIANCHI }}
