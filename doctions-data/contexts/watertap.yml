@@ -48,6 +48,11 @@ project:
         month: 12
 
 releases:
+  '1.5.0':
+    highlights: []
+  '1.5.0rc0':
+    next_dev_version_tag: 1.6.dev0
+    highlights: []
   '1.4.0':
     highlights: []
   '1.4.0rc0':
