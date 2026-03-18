@@ -51,6 +51,11 @@ project:
         month: 8
 
 releases:
+  "2.11.0rc1":
+    highlights_text: ""
+    refs_to_cherrypick:
+      # #1748
+      - ea69fa4242d82649beb9e1874915c0e0ff3f3c17
   "2.11.0rc0":
     next_dev_version_tag: "2.12.dev0"
   "2.10.0":
