@@ -216,7 +216,7 @@ jobs:
     steps:
 
      - name: Set up Miniconda
-       if: inputs.use-conda
+       if: inputs.use-reaktoro
        uses: conda-incubator/setup-miniconda@v3
        with:
          python-version: ${{ inputs.python-version }}
@@ -224,12 +224,12 @@ jobs:
          activate-environment: test-env
 
      - uses: actions/setup-python@v5
-       if: ${{ !inputs.use-conda }}
+       if: ${{ !inputs.use-reaktoro }}
        with:
          python-version: ${{ inputs.python-version }}
 
      - name: Install reaktoro via conda
-       if: inputs.use-conda
+       if: inputs.use-reaktoro
        run: |
          conda install -c conda-forge reaktoro -y
 
