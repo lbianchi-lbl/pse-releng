@@ -162,8 +162,7 @@ jobs:
      - name: Install reaktoro via conda
        if: inputs.use-reaktoro
        run: |
-         conda install -c conda-forge reaktoro -y
-
+         conda install -c conda-forge cyipopt reaktoro -y
      - name: Install from .whl file
        run: |
          ls -lh dist/
