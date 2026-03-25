@@ -46,19 +46,6 @@ jobs:
             build-command: |
               python -m build
 
-          - target: reaktoro-pse
-            upload: false
-            repository: watertap-org/reaktoro-pse   
-            release-tag: '0.3.0'               
-            pypi-name: reaktoro-pse
-            python-version: '3.11'
-            use-reaktoro: true
-            test-command: |
-              pip install pytest
-              pytest --pyargs reaktoro_pse -m "unit" -x
-            build-command: |
-              python -m build
-
     uses: ./.github/workflows/pypi.yml
     with:
       upload: ${{ matrix.upload }}
