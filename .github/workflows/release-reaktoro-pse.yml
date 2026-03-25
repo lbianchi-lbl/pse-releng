@@ -25,6 +25,7 @@ jobs:
     uses: ./.github/workflows/pypi.yml
     with:
       upload: true
+      use-reaktoro: true
       repository: watertap-org/reaktoro-pse
       release-tag: ${{ inputs.tag }}
       pypi-name: reaktoro-pse

@@ -74,6 +74,12 @@ on:
         required: false
         default: true
 
+      use-reaktoro:
+        description: Whether to set up conda and install reaktoro via conda-forge before testing
+        type: boolean
+        required: false
+        default: false
+
     secrets:
 
       test-pypi-token:
@@ -127,8 +133,6 @@ jobs:
        with:
          name: ${{ inputs.artifact-name }}
          path: dist/
-         # retention time should be as low as possible
-         # since these artifacts can be large (up to 100-ish MB)
          retention-days: 1
 
   test-whl:
@@ -136,16 +140,29 @@ jobs:
     name: Test ${{ inputs.pypi-name }} from .whl file
     runs-on: ${{ inputs.runner-image }}
 
-
     steps:
      - uses: actions/download-artifact@v4
        with:
          name: ${{ inputs.artifact-name }}
          path: dist
 
-     - uses: actions/setup-python@v5
+     - name: Set up Miniconda
+       if: inputs.use-reaktoro  
+       uses: conda-incubator/setup-miniconda@v3
        with:
          python-version: ${{ inputs.python-version }}
+         auto-activate-base: true
+         activate-environment: test-env
+
+     - uses: actions/setup-python@v5
+       if: ${{ !inputs.use-reaktoro }}
+       with:
+         python-version: ${{ inputs.python-version }}
+
+     - name: Install reaktoro via conda
+       if: inputs.use-reaktoro
+       run: |
+         conda install -c conda-forge reaktoro -y
 
      - name: Install from .whl file
        run: |
@@ -154,7 +171,7 @@ jobs:
          echo $whl_file
          pip install "${whl_file}${{ inputs.extras-require }}"
 
-     - name: Check that installed package has the expected targs
+     - name: Check that installed package has the expected tags
        run: |
          pip show ${{ inputs.pypi-name }} | grep "${{ inputs.release-tag }}"
 
@@ -199,9 +216,23 @@ jobs:
 
     steps:
 
-     - uses: actions/setup-python@v5
+     - name: Set up Miniconda
+       if: inputs.use-conda
+       uses: conda-incubator/setup-miniconda@v3
        with:
          python-version: ${{ inputs.python-version }}
+         auto-activate-base: true
+         activate-environment: test-env
+
+     - uses: actions/setup-python@v5
+       if: ${{ !inputs.use-conda }}
+       with:
+         python-version: ${{ inputs.python-version }}
+
+     - name: Install reaktoro via conda
+       if: inputs.use-conda
+       run: |
+         conda install -c conda-forge reaktoro -y
 
      - name: Install ${{ inputs.pypi-name }}==${{ inputs.release-tag }} from test PyPI
        env:
@@ -248,5 +279,3 @@ jobs:
          TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
        run: |
          twine upload --verbose dist/*
-
-  # upload:
