@@ -155,7 +155,7 @@ jobs:
          activate-environment: test-env
 
      - uses: actions/setup-python@v5
-       if: ${{ !inputs.use-reaktoro }}
+       if: ${{ inputs.use-reaktoro ==false }}
        with:
          python-version: ${{ inputs.python-version }}
 
