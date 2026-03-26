@@ -129,15 +129,20 @@ class Release(Model):
 
     @property
     def docs_url(self):
+        if self.project.readthedocs is None:
+            return None
         return self.project.readthedocs.url / 'en' / self.tag
 
     @property
     def docs_builds_url(self):
+        if self.project.readthedocs is None:
+            return None
         return self.project.readthedocs.builds_url
 
     @property
     def docs_version_url(self):
-        # https://readthedocs.org/dashboard/MYPROJECT/version/3.10.0/edit/
+        if self.project.readthedocs is None:
+            return None
         return self.project.readthedocs.version_url / self.tag / 'edit'
 
     @property

@@ -25,6 +25,11 @@ jobs:
             version: '2.5.0'
             python-version: '3.10'
             extras-require: '[ui,coolprop,grid,omlt]'
+          - target: reaktoro-pse-0.3
+            pypi-name: reaktoro-pse
+            version: '0.3'
+            python-version: '3.11'
+            conda-dependencies: 'reaktoro cyipopt'
     uses: ./.github/workflows/env-snapshot.yml
     with:
       pypi-name: ${{ matrix.pypi-name }}

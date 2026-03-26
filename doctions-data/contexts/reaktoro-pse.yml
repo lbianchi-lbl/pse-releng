@@ -1,0 +1,26 @@
+project:
+  id: reaktoro-pse
+  name: Reaktoro-PSE
+  github:
+    org: watertap-org
+    name: reaktoro-pse
+  python:
+    name: reaktoro-pse
+    default_python_version: '3.11'
+    conda_dependencies: 'reaktoro cyipopt'
+    test_commands:
+      - idaes get-extensions --verbose && pip install pytest && pushd "$(mktemp -d)" && pytest --pyargs reaktoro_pse -v
+
+  releasing:
+    notes_template: |
+      # {{ notes_title }}
+
+      Start with README.md to get started with install instructions, examples, etc.
+
+      {{ highlights_text }}
+    cycles:
+      '0.3': {year: 2026, month: 3}
+
+releases:
+  "0.3.0":
+    release_branch: main

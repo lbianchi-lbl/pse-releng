@@ -50,3 +50,4 @@ jobs:
       pypi-name: reaktoro-pse
       version: ${{ inputs.tag }}
       python-version: '3.11'
+      conda-dependencies: 'reaktoro cyipopt'

@@ -23,9 +23,9 @@ jobs:
         run: |
           # -x: append "Cherry-picked from..." to commit message
           git cherry-pick -x ${{ release.refs_to_cherrypick|join(' ') }}
-      - name: Update version and dependencies in `./setup.py` (WaterTAP, DISPATCHES)
+      - name: Update version and dependencies in `./setup.py` (DISPATCHES)
         uses: checklist
-        if: ${{ project.id in ["watertap", "dispatches"] }}
+        if: ${{ project.id in ["dispatches"] }}
         with:
           items:
             - Open `./setup.py`
@@ -39,6 +39,19 @@ jobs:
             - Search for `release =` and set `release = "${{ release.tag }}"`
             - Save and exit
             - '`git add setup.py docs/conf.py`'
+
+      - name: Update version and dependencies in `pyproject,toml` (WaterTAP)
+        uses: checklist
+        if: ${{ project.id in ["watertap"] }}
+        with:
+          items:
+          
+            - Open `pyproject.toml`
+            - Search for `version = ` and set it to `version = "${{ release.tag }}"`
+            - Search for `idaes-pse` in the dependencies and set it to the appropriate version
+            - Verify that no URLs are present in the requirements
+            - Save and exit
+            - '`git add pyproject.toml`'
       - name: Update version and dependencies (FOQUS)
         uses: checklist
         if: ${{ project.id in ["foqus"] }}
@@ -54,16 +67,13 @@ jobs:
             - "`git add setup.py ./docs/source/conf.py`"
       - name: Update version (IDAES)
         uses: checklist
-        if: ${{ project.id in ["idaes", "idaes-pse"] }}
+        if: ${{ project.id in ["idaes"] }}
         with:
           items:
-            - Open `./idaes/ver.py`
-            - Search for `package_version = Version(`
-            - Set first 3 arguments to `${{ release.major, release.minor, release.patch }}`
-            - Set 4th arguments to `"${{ release.version_qualifier }}"`
-            - Remaining arguments can be left as-is
+            - Open `.pyproject.toml`
+            - Search for `version = ` and set it to `version = "${{ release.tag }}"`
             - Save and exit
-            - "`git add ./idaes/ver.py`"
+            - "`git add ./pyproject.toml`"
       - name: Update version (IDAES examples)
         if: ${{ project.id in ["idaes-examples"] }}
         uses: checklist
@@ -220,12 +230,6 @@ jobs:
   github-release:
     name: Creating the GitHub release
     steps:
-      - name: In a clean directory, clone the repo and switch to the release branch, add release tag
-        run: |
-          pushd "$(mktemp -d)"
-          ${{ release.clone_branch_command }}
-          git tag "${{ release.tag }}"
-          git push origin tag "${{ release.tag }}"
       - name: Generate release notes and create GitHub draft release
         uses: github-release
         with:
@@ -281,7 +285,7 @@ jobs:
 
   docs:
     name: Checking the docs (ReadTheDocs)
-    if: ${{ project.id not in ["idaes-examples-pse"] }}
+    if: ${{ project.id not in ["idaes-examples-pse", "reaktoro-pse"] }}
     steps:
       - name: Check the ReadTheDocs build
         uses: checklist
@@ -310,14 +314,14 @@ jobs:
 
   python-package:
     name: Creating the `${{ project.python.name }}` Python package distribution
-    if: ${{ project.python.name and project.id in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui"] }}
+    if: ${{ project.python.name and project.id in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui", "reaktoro-pse"] }}
     steps:
       - name: Trigger the PyPI workflow using `gh workflow run`
         run: |
           gh workflow run -R lbianchi-lbl/pse-releng release-${{ project.python.name }}.yml -F phase=pypi -F tag=${{ release.tag }}
   python-package-manual:
     name: Creating the `${{ project.python.name }}` Python package distribution
-    if: ${{ project.python.name and project.id not in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui"] }}
+    if: ${{ project.python.name and project.id not in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui", "reaktoro-pse"] }}
     steps:
       - name: In a clean directory, clone the repo and switch to the release branch
         run: |
@@ -455,7 +459,7 @@ jobs:
           git push
 
   environment-info:
-    if: ${{ project.id in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui"] }}
+    if: ${{ project.id in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui", "reaktoro-pse"] }}
     name: Collect environment info for the release from env-snapshot workflow
     steps:
       - name: Download workflow artifact and upload as release artifact
@@ -467,7 +471,7 @@ jobs:
           gh release upload --repo "${{ project.github.full_name }}" "${{ release.tag }}" $artifact_name/*
 
   environment-info-manual:
-    if: ${{ project.id not in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui"] }}
+    if: ${{ project.id not in ["idaes", "idaes-examples", "watertap", "prommis", "pareto", "idaes-ui", "reaktoro-pse"] }}
     name: Collect environment info for the release
     steps:
       - name: Install from PyPI
@@ -479,6 +483,7 @@ jobs:
           _pip_file_name="requirements-${_rel_prefix}.txt"
           conda create --yes python=${{ project.python.default_python_version }} --name "$_env_name" && conda activate "$_env_name"
           which pip | grep "$_env_name"
+          {% if project.python.conda_dependencies %}conda install --yes -c conda-forge ${{ project.python.conda_dependencies }}{% endif %}
           pip install "${{ release.pypi_target }}"
       - name: Save environment info
         run: |
@@ -507,7 +512,7 @@ jobs:
 
             - GitHub: {{ github_release_url }}
             - PyPI: {{ pypi_url }}
-            - ReadTheDocs: {{ docs_url }}
+            {% if docs_url %}- ReadTheDocs: {{ docs_url }}{% endif %}
       - name: Announce the release
         if: release.is_final
         uses: checklist

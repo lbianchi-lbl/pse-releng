@@ -51,6 +51,11 @@ on:
         required: false
         default: environment.yml
 
+      conda-dependencies:
+        description: Space-delimited list of dependencies to install with Conda before pip installing the package, if any
+        type: string
+        required: false
+        default: ''
 defaults:
   run:
     shell: bash -l {0}
@@ -71,6 +76,7 @@ jobs:
             python-version: ${{ inputs.python-version }}
             requirements-file: ${{ inputs.requirements-file }}
             environment-file: ${{ inputs.environment-file }}
+            conda-dependencies: ${{ inputs.conda-dependencies }}
     env:
       OUTPUT_DIR: ${{ matrix.env-name }}
 
@@ -82,6 +88,11 @@ jobs:
           miniforge-version: latest
           activate-environment: ${{ matrix.env-name }}
           python-version: ${{ matrix.python-version }}
+      
+      - name: Install dependencies with Conda
+        if: ${{ matrix.conda-dependencies != '' }} 
+        run: |
+          conda install --yes -c conda-forge ${{ matrix.conda-dependencies }}
 
       - name: Install ${{ matrix.pip-install-target }}
         run: |
@@ -108,14 +119,12 @@ jobs:
           -f "${{ matrix.environment-file }}"
 
           cat "${{ matrix.environment-file }}"
-
+      - name: List output directory contents
+        run: ls -la "$OUTPUT_DIR/"
       - name: Save as workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.env-name }}
-          path: ${{ env.OUTPUT_DIR }}
+          path: ${{ env.OUTPUT_DIR }}/
           if-no-files-found: error
-          # it might be useful to retain this artifact for a longer time
-          # it should not significantly impact the storage limit
-          # since it won't be more than a few kB in size
           retention-days: 90
