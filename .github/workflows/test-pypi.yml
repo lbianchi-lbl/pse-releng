@@ -24,7 +24,6 @@ jobs:
             repository: CCSI-Toolset/FOQUS
             pypi-name: ccsi-foqus
             python-version: '3.11'
-            use-reaktoro: false
             test-command: |
               foqus --help
             build-command: |
@@ -33,11 +32,10 @@ jobs:
           - target: idaes-pse
             upload: false
             repository: IDAES/idaes-pse
-            release-tag: '2.6.0'
+            release-tag: '2.6.0rc0'
             pypi-name: idaes-pse
             python-version: '3.10'
             extras-require: '[ui,coolprop,grid,omlt]'
-            use-reaktoro: false
             test-command: |
               idaes get-extensions --extra petsc --verbose
               pip install pytest
