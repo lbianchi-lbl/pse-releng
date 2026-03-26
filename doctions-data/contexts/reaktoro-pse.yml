@@ -19,7 +19,7 @@ project:
 
       {{ highlights_text }}
     cycles:
-      '0.3.0': {year: 2026, month: 3}
+      '0.3': {year: 2026, month: 3}
 
 releases:
   "0.3.0":
