@@ -156,11 +156,6 @@ jobs:
        if: ${{ inputs.conda-dependencies != '' }}
        run: |
          conda install --yes -c conda-forge ${{ inputs.conda-dependencies }}
-
-     - name: Install reaktoro via conda
-       if: inputs.use-reaktoro
-       run: |
-         conda install -c conda-forge cyipopt reaktoro -y
      - name: Install from .whl file
        run: |
          ls -lh dist/
