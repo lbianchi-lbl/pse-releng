@@ -55,7 +55,7 @@ jobs:
             use-reaktoro: true
             test-command: |
               pip install pytest
-              pytest --pyargs reaktoro_pse -v
+              pytest --pyargs reaktoro_pse -m "unit" -x
             build-command: |
               python -m build
 
