@@ -71,3 +71,4 @@ jobs:
       extras-require: ${{ matrix.extras-require }}
       test-command: ${{ matrix.test-command }}
       runner-image: ubuntu-22.04  # strictly speaking, this is only needed for idaes get-extensions
+      conda-dependencies: ${{ matrix.conda-dependencies }}
