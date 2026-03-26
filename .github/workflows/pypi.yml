@@ -73,7 +73,12 @@ on:
         type: boolean
         required: false
         default: true
-
+      
+      conda-dependencies:
+        description: Space-separated list of conda packages to install via conda-forge before pip steps (e.g. "reaktoro cyipopt")
+        type: string
+        required: false
+        default: ''
     secrets:
 
       test-pypi-token:
@@ -146,6 +151,17 @@ jobs:
      - uses: actions/setup-python@v5
        with:
          python-version: ${{ inputs.python-version }}
+      
+     - uses: conda-incubator/setup-miniconda@v3
+       with:
+         python-version: ${{ inputs.python-version }}
+         auto-activate-base: true
+         activate-environment: ''
+
+     - name: Install conda dependencies
+       if: ${{ inputs.conda-dependencies != '' }}
+       run: |
+         conda install --yes -c conda-forge ${{ inputs.conda-dependencies }}
 
      - name: Install from .whl file
        run: |
@@ -154,7 +170,7 @@ jobs:
          echo $whl_file
          pip install "${whl_file}${{ inputs.extras-require }}"
 
-     - name: Check that installed package has the expected targs
+     - name: Check that installed package has the expected tag
        run: |
          pip show ${{ inputs.pypi-name }} | grep "${{ inputs.release-tag }}"
 
@@ -248,5 +264,3 @@ jobs:
          TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
        run: |
          twine upload --verbose dist/*
-
-  # upload:
