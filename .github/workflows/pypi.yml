@@ -74,6 +74,22 @@ on:
         required: false
         default: true
 
+      conda-channels:
+        description: >
+          Space-separated list of conda channels to use when installing conda packages.
+          Only used when conda-packages is non-empty. Defaults to "conda-forge".
+        type: string
+        required: false
+        default: 'conda-forge'
+
+      conda-packages:
+        description: >
+          Space-separated list of conda packages to install before pip install.
+          Leave empty (default) to skip conda setup entirely and use setup-python instead.
+        type: string
+        required: false
+        default: ''
+
     secrets:
 
       test-pypi-token:
@@ -127,8 +143,6 @@ jobs:
        with:
          name: ${{ inputs.artifact-name }}
          path: dist/
-         # retention time should be as low as possible
-         # since these artifacts can be large (up to 100-ish MB)
          retention-days: 1
 
   test-whl:
@@ -136,16 +150,31 @@ jobs:
     name: Test ${{ inputs.pypi-name }} from .whl file
     runs-on: ${{ inputs.runner-image }}
 
-
     steps:
      - uses: actions/download-artifact@v4
        with:
          name: ${{ inputs.artifact-name }}
          path: dist
 
-     - uses: actions/setup-python@v5
+     - name: Set up Python (without conda)
+       if: ${{ inputs.conda-packages == '' }}
+       uses: actions/setup-python@v5
        with:
          python-version: ${{ inputs.python-version }}
+
+     - name: Set up conda environment
+       if: ${{ inputs.conda-packages != '' }}
+       uses: conda-incubator/setup-miniconda@v3
+       with:
+         python-version: ${{ inputs.python-version }}
+         miniforge-version: latest
+         channels: ${{ inputs.conda-channels }}
+         channel-priority: flexible
+         activate-environment: pkg-test
+
+     - name: Install conda packages
+       if: ${{ inputs.conda-packages != '' }}
+       run: conda install --yes ${{ inputs.conda-packages }}
 
      - name: Install from .whl file
        run: |
@@ -154,7 +183,7 @@ jobs:
          echo $whl_file
          pip install "${whl_file}${{ inputs.extras-require }}"
 
-     - name: Check that installed package has the expected targs
+     - name: Check that installed package has the expected tag
        run: |
          pip show ${{ inputs.pypi-name }} | grep "${{ inputs.release-tag }}"
 
@@ -199,9 +228,25 @@ jobs:
 
     steps:
 
-     - uses: actions/setup-python@v5
+     - name: Set up Python (without conda)
+       if: ${{ inputs.conda-packages == '' }}
+       uses: actions/setup-python@v5
        with:
          python-version: ${{ inputs.python-version }}
+
+     - name: Set up conda environment
+       if: ${{ inputs.conda-packages != '' }}
+       uses: conda-incubator/setup-miniconda@v3
+       with:
+         python-version: ${{ inputs.python-version }}
+         miniforge-version: latest
+         channels: ${{ inputs.conda-channels }}
+         channel-priority: flexible
+         activate-environment: conda-test
+
+     - name: Install conda packages
+       if: ${{ inputs.conda-packages != '' }}
+       run: conda install --yes ${{ inputs.conda-packages }}
 
      - name: Install ${{ inputs.pypi-name }}==${{ inputs.release-tag }} from test PyPI
        env:
@@ -248,5 +293,3 @@ jobs:
          TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
        run: |
          twine upload --verbose dist/*
-
-  # upload:
