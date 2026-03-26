@@ -23,7 +23,7 @@ jobs:
         run: |
           # -x: append "Cherry-picked from..." to commit message
           git cherry-pick -x ${{ release.refs_to_cherrypick|join(' ') }}
-      - name: Update version and dependencies in `./setup.py` (WaterTAP, DISPATCHES)
+      - name: Update version and dependencies in `./setup.py` (DISPATCHES)
         uses: checklist
         if: ${{ project.id in ["dispatches"] }}
         with:
@@ -40,7 +40,7 @@ jobs:
             - Save and exit
             - '`git add setup.py docs/conf.py`'
 
-      - mame: Update version and dependencies in `pyproject,toml` (WaterTAP)
+      - name: Update version and dependencies in `pyproject,toml` (WaterTAP)
         uses: checklist
         if: ${{ project.id in ["watertap"] }}
         with:
@@ -483,6 +483,7 @@ jobs:
           _pip_file_name="requirements-${_rel_prefix}.txt"
           conda create --yes python=${{ project.python.default_python_version }} --name "$_env_name" && conda activate "$_env_name"
           which pip | grep "$_env_name"
+          {% if project.python.conda_dependencies %}conda install --yes -c conda-forge ${{ project.python.conda_dependencies }}{% endif %}
           pip install "${{ release.pypi_target }}"
       - name: Save environment info
         run: |
