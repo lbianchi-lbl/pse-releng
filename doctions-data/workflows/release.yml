@@ -285,7 +285,7 @@ jobs:
 
   docs:
     name: Checking the docs (ReadTheDocs)
-    if: ${{ project.id not in ["idaes-examples-pse"] }}
+    if: ${{ project.id not in ["idaes-examples-pse", "reaktoro-pse"] }}
     steps:
       - name: Check the ReadTheDocs build
         uses: checklist
