@@ -32,6 +32,8 @@ jobs:
       build-command: |
         python -m build
       runner-image: ubuntu-22.04
+      conda-channels: conda-forge
+      conda-packages: reaktoro cyipopt
       test-command: |
         idaes get-extensions --verbose
         pip install pytest

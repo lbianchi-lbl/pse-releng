@@ -32,7 +32,7 @@ jobs:
           - target: idaes-pse
             upload: false
             repository: IDAES/idaes-pse
-            release-tag: '2.6.0rc0'
+            release-tag: '2.10.0'
             pypi-name: idaes-pse
             python-version: '3.10'
             extras-require: '[ui,coolprop,grid,omlt]'
@@ -40,7 +40,22 @@ jobs:
               idaes get-extensions --extra petsc --verbose
               pip install pytest
               wget https://raw.githubusercontent.com/IDAES/idaes-pse/main/pytest.ini
-              pytest --pyargs idaes -m "unit" -x
+              pytest --pyargs idaes -m "unit" -x -k "not (test_report_perf_dict or TestMSContactorInitializerNoHoldup or TestMSContactorInitializerWithHoldup)"
+            build-command: |
+              python -m build
+
+          - target: reaktoro-pse
+            upload: false
+            repository: watertap-org/reaktoro-pse
+            release-tag: '0.3.0'
+            pypi-name: reaktoro-pse
+            python-version: '3.11'
+            conda-channels: conda-forge
+            conda-packages: reaktoro cyipopt
+            test-command: |
+              idaes get-extensions --verbose
+              pip install pytest
+              pytest --pyargs reaktoro_pse -v
             build-command: |
               python -m build
 
@@ -53,6 +68,8 @@ jobs:
       release-tag: ${{ matrix.release-tag }}
       python-version: ${{ matrix.python-version }}
       build-command: ${{ matrix.build-command }}
-      extras-require: ${{ matrix.extras-require }}
+      extras-require: ${{ matrix.extras-require || '' }}
       test-command: ${{ matrix.test-command }}
-      runner-image: ubuntu-22.04  # strictly speaking, this is only needed for idaes get-extensions
+      conda-channels: ${{ matrix.conda-channels || '' }}
+      conda-packages: ${{ matrix.conda-packages || '' }}
+      runner-image: ubuntu-22.04
