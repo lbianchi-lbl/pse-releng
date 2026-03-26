@@ -46,7 +46,7 @@ jobs:
 
           - target: reaktoro-pse
             upload: false
-            release-tag: '0.2.0'  
+            release-tag: '0.3.0'  
             repository: watertap-org/reaktoro-pse
             pypi-name: reaktoro-pse
             python-version: '3.11'
