@@ -1,0 +1,27 @@
+project:
+  id: parameter-sweep
+  name: Parameter Sweep
+  github:
+    org: watertap-org
+    name: parameter-sweep
+  readthedocs:
+    slug: parameter-sweep
+    project_name: parameter-sweep
+  python:
+    name: parameter-sweep
+    default_python_version: '3.11'
+    test_commands:
+      - idaes get-extensions --verbose && pip install pytest && pushd "$(mktemp -d)" && pytest --pyargs parameter-sweep -v
+  releasing:
+    notes_template: |
+      # {{ notes_title }}
+
+      Start with our [online documentation]({{ docs_url }}) to get started with install instructions, examples, etc.
+
+      {{ highlights_text }}
+    cycles:
+      "0.2": {year: 2026, month: 3}
+
+releases:
+  "0.2.0rc1":
+    release_branch: main
