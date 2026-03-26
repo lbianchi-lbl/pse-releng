@@ -17,6 +17,8 @@ project:
       Start with README.md to get started with install instructions, examples, etc.
 
       {{ highlights_text }}
+    cycles:
+      '0.3.0': {year: 2026, month: 3}
 
 releases:
   "0.3.0":
