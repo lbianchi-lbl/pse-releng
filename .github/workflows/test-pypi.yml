@@ -48,15 +48,15 @@ jobs:
 
           - target: reaktoro-pse
             upload: false
+            release-tag: '0.2.0'  
             repository: watertap-org/reaktoro-pse
-            release-tag: '0.3.0'
             pypi-name: reaktoro-pse
             python-version: '3.11'
-            use-reaktoro: true
+            conda-dependencies: 'reaktoro cyipopt'
             test-command: |
-              idaes get-extensions --extra petsc --verbose
+              idaes get-extensions --verbose
               pip install pytest
-              pytest --pyargs reaktoro_pse -m "unit" -x
+              pytest --pyargs reaktoro_pse -v
             build-command: |
               python -m build
 

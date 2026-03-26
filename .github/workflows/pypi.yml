@@ -74,11 +74,11 @@ on:
         required: false
         default: true
 
-      use-reaktoro:
-        description: Whether to set up conda and install reaktoro via conda-forge before testing
-        type: boolean
+      conda-dependencies:
+        description: Space-separated list of conda packages to install via conda-forge before pip steps (e.g. "reaktoro cyipopt")
+        type: string
         required: false
-        default: false
+        default: ''
 
     secrets:
 
@@ -146,18 +146,16 @@ jobs:
          name: ${{ inputs.artifact-name }}
          path: dist
 
-     - name: Set up Miniconda
-       if: inputs.use-reaktoro  
-       uses: conda-incubator/setup-miniconda@v3
+     - uses: conda-incubator/setup-miniconda@v3
        with:
          python-version: ${{ inputs.python-version }}
          auto-activate-base: true
-         activate-environment: test-env
+         activate-environment: ''
 
-     - uses: actions/setup-python@v5
-       if: ${{ inputs.use-reaktoro ==false }}
-       with:
-         python-version: ${{ inputs.python-version }}
+     - name: Install conda dependencies
+       if: ${{ inputs.conda-dependencies != '' }}
+       run: |
+         conda install --yes -c conda-forge ${{ inputs.conda-dependencies }}
 
      - name: Install reaktoro via conda
        if: inputs.use-reaktoro
@@ -170,7 +168,7 @@ jobs:
          echo $whl_file
          pip install "${whl_file}${{ inputs.extras-require }}"
 
-     - name: Check that installed package has the expected tags
+     - name: Check that installed package has the expected tag
        run: |
          pip show ${{ inputs.pypi-name }} | grep "${{ inputs.release-tag }}"
 
@@ -215,23 +213,16 @@ jobs:
 
     steps:
 
-     - name: Set up Miniconda
-       if: inputs.use-reaktoro
-       uses: conda-incubator/setup-miniconda@v3
+     - uses: conda-incubator/setup-miniconda@v3
        with:
          python-version: ${{ inputs.python-version }}
          auto-activate-base: true
-         activate-environment: test-env
+         activate-environment: ''
 
-     - uses: actions/setup-python@v5
-       if: ${{ !inputs.use-reaktoro }}
-       with:
-         python-version: ${{ inputs.python-version }}
-
-     - name: Install reaktoro via conda
-       if: inputs.use-reaktoro
+     - name: Install conda dependencies
+       if: ${{ inputs.conda-dependencies != '' }}
        run: |
-         conda install -c conda-forge reaktoro -y
+         conda install --yes -c conda-forge ${{ inputs.conda-dependencies }}
 
      - name: Install ${{ inputs.pypi-name }}==${{ inputs.release-tag }} from test PyPI
        env:
