@@ -23,6 +23,8 @@ on:
           - pareto
           - prommis
           - watertap
+          - reaktoro-pse
+          - parameter-sweep
       workflow:
         description: Workflow ID used to determine which workflow file to use
         required: false
