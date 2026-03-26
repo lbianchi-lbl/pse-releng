@@ -54,6 +54,7 @@ jobs:
             python-version: '3.11'
             use-reaktoro: true
             test-command: |
+              idaes get-extensions --extra petsc --verbose
               pip install pytest
               pytest --pyargs reaktoro_pse -m "unit" -x
             build-command: |
