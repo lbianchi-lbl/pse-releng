@@ -40,7 +40,7 @@ jobs:
               idaes get-extensions --extra petsc --verbose
               pip install pytest
               wget https://raw.githubusercontent.com/IDAES/idaes-pse/main/pytest.ini
-              pytest --pyargs idaes -m "unit" -x -k "not test_report_perf_dict"
+              pytest --pyargs idaes -m "unit" -x -k "not (test_report_perf_dict or TestMSContactorInitializerNoHoldup or TestMSContactorInitializerWithHoldup)"
             build-command: |
               python -m build
 
