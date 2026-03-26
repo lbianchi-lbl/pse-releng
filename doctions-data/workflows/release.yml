@@ -511,7 +511,7 @@ jobs:
 
             - GitHub: {{ github_release_url }}
             - PyPI: {{ pypi_url }}
-            - ReadTheDocs: {{ docs_url }}
+            {% if docs_url %}- ReadTheDocs: {{ docs_url }}{% endif %}
       - name: Announce the release
         if: release.is_final
         uses: checklist
