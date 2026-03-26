@@ -148,10 +148,6 @@ jobs:
          name: ${{ inputs.artifact-name }}
          path: dist
 
-     - uses: actions/setup-python@v5
-       with:
-         python-version: ${{ inputs.python-version }}
-      
      - uses: conda-incubator/setup-miniconda@v3
        with:
          python-version: ${{ inputs.python-version }}
@@ -208,16 +204,21 @@ jobs:
          TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
        run: |
          twine upload --verbose dist/*
-
   install-test-pypi:
     runs-on: ${{ inputs.runner-image }}
     needs: [upload-test-pypi]
 
     steps:
-
-     - uses: actions/setup-python@v5
+     - uses: conda-incubator/setup-miniconda@v3
        with:
          python-version: ${{ inputs.python-version }}
+         auto-activate-base: true
+         activate-environment: ''
+
+     - name: Install conda dependencies
+       if: ${{ inputs.conda-dependencies != '' }}
+       run: |
+         conda install --yes -c conda-forge ${{ inputs.conda-dependencies }}
 
      - name: Install ${{ inputs.pypi-name }}==${{ inputs.release-tag }} from test PyPI
        env:
