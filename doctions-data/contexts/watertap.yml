@@ -48,7 +48,7 @@ project:
         month: 12
 
 releases:
-  '1.6.0rc1':
+  '1.6.0rc0':
     next_dev_version_tag: 1.7.dev0
     highlights: []
   '1.5.0':
