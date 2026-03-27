@@ -23,5 +23,7 @@ project:
       "0.2": {year: 2026, month: 3}
 
 releases:
+  "0.2.0":
+    release_branch: main
   "0.2.0rc1":
     release_branch: main
