@@ -51,6 +51,11 @@ project:
         year: 2022
         month: 02
 releases:
+  "1.2.0":
+    refs_to_cherrypick:
+    
+    # #360
+    - 4165b8aeb4eeaf3c09c95f579d08c2d8ecc46fde
   "1.2.0rc0":
     next_dev_version_tag: "1.3.dev0"
   "1.1.0":
